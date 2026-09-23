@@ -1,0 +1,439 @@
+// =====================================================================
+// Modelo de datos - Sistema Unidad Territorial (junta de vecinos)
+// Autor: Alan Barria | Ingenieria en Informatica | Sede Puerto Montt
+// Pegar completo en https://dbdiagram.io/d  (Go to app > Import/pegar codigo)
+// =====================================================================
+
+Project sistema_unidad_territorial {
+  database_type: 'PostgreSQL'
+  Note: 'Base de datos del sistema web para la gestion de una junta de vecinos (Ley 19.418).'
+}
+
+// ---------------------------------------------------------------------
+// ENUMERACIONES
+// ---------------------------------------------------------------------
+Enum rol_usuario {
+  vecino
+  directorio
+}
+
+Enum estado_usuario {
+  pendiente   [note: 'Inscripcion por revisar (RF-04)']
+  activo
+  rechazado
+  baja        [note: 'Dado de baja (RF-05). Se conserva el historial']
+}
+
+Enum cargo_directorio {
+  presidente
+  vicepresidente
+  secretario
+  tesorero
+  director
+}
+
+Enum estado_certificado {
+  pendiente
+  aprobado
+  rechazado
+}
+
+Enum estado_proyecto {
+  recibido
+  en_revision
+  aprobado
+  rechazado
+}
+
+Enum tipo_espacio {
+  cancha
+  sala
+  plaza
+  otro
+}
+
+Enum estado_reserva {
+  pendiente
+  aprobada
+  rechazada
+  cancelada
+}
+
+Enum estado_actividad {
+  programada
+  cancelada
+  realizada
+}
+
+Enum estado_inscripcion {
+  inscrito
+  cancelado
+}
+
+Enum tipo_entidad {
+  usuario
+  certificado
+  proyecto
+  reserva
+}
+
+Enum canal_notificacion {
+  email
+  whatsapp
+  afiche
+}
+
+Enum estado_notificacion {
+  enviado
+  fallido
+  leido
+}
+
+Enum tipo_documento {
+  cuenta_luz
+  contrato_arriendo
+  certificado_junta
+  otro
+}
+
+Enum estado_documento {
+  pendiente
+  aprobado
+  rechazado
+}
+
+// ---------------------------------------------------------------------
+// CONFIGURACION (RF-29, RNF-10)
+// ---------------------------------------------------------------------
+Table junta {
+  id int [pk, increment]
+  nombre varchar(120) [not null, note: 'Ej: Junta de Vecinos Villa Los Lagos']
+  unidad_vecinal varchar(60) [not null]
+  comuna varchar(60) [not null]
+  direccion_sede varchar(150)
+  logo_url varchar(255)
+  correo_contacto varchar(120)
+  creado_en timestamp [not null, default: `now()`]
+
+  Note: 'Datos de la junta. Permite adaptar el sistema a otra unidad vecinal sin rehacerlo.'
+}
+
+Table directorio_integrante {
+  id int [pk, increment]
+  junta_id int [not null, ref: > junta.id]
+  usuario_id int [not null, ref: > usuario.id]
+  cargo cargo_directorio [not null]
+  fecha_inicio date [not null]
+  fecha_fin date [note: 'Nulo = cargo vigente']
+
+  indexes {
+    junta_id
+    usuario_id
+  }
+
+  Note: 'Integrantes del directorio y su cargo. Se muestran en los certificados.'
+}
+
+// ---------------------------------------------------------------------
+// ACCESO Y VECINOS (RF-01 a RF-07)
+// ---------------------------------------------------------------------
+Table usuario {
+  id int [pk, increment]
+  junta_id int [not null, ref: > junta.id]
+  rut varchar(12) [not null, unique, note: 'Validado en el backend (formato y digito verificador)']
+  nombres varchar(80) [not null]
+  apellidos varchar(80) [not null]
+  fecha_nacimiento date [not null, note: 'Para validar mayor de 14 anios (RF-01)']
+  direccion varchar(150) [not null]
+  correo varchar(120) [not null, unique]
+  telefono varchar(20)
+  password_hash varchar(255) [not null, note: 'Cifrada con bcrypt (RNF-04)']
+  rol rol_usuario [not null, default: 'vecino']
+  estado estado_usuario [not null, default: 'pendiente']
+  creado_en timestamp [not null, default: `now()`]
+
+  indexes {
+    junta_id
+    (junta_id, estado)
+  }
+
+  Note: 'Vecinos y miembros del directorio. El visitante no tiene cuenta.'
+}
+
+Table token_recuperacion {
+  id int [pk, increment]
+  usuario_id int [not null, ref: > usuario.id]
+  token_hash varchar(255) [not null, unique]
+  expira_en timestamp [not null]
+  usado_en timestamp [note: 'Nulo = aun no usado']
+  creado_en timestamp [not null, default: `now()`]
+
+  Note: 'Enlaces de recuperacion de contrasena (RF-07). Expiran y sirven una sola vez.'
+}
+
+Table sesion {
+  id int [pk, increment]
+  usuario_id int [not null, ref: > usuario.id]
+  token_hash varchar(255) [not null, unique]
+  expira_en timestamp [not null]
+  creado_en timestamp [not null, default: `now()`]
+
+  indexes {
+    usuario_id
+  }
+
+  Note: 'Sesiones activas para autenticacion persistente (RF-06).'
+}
+
+// ---------------------------------------------------------------------
+// VERIFICACION DE RESIDENCIA
+// ---------------------------------------------------------------------
+Table documento_verificacion {
+  id int [pk, increment]
+  usuario_id int [not null, ref: > usuario.id]
+  tipo tipo_documento [not null]
+  ruta varchar(255) [not null]
+  estado estado_documento [not null, default: 'pendiente']
+  motivo_rechazo text
+  fecha_subida timestamp [not null, default: `now()`]
+  revisado_por int [ref: > usuario.id, note: 'Miembro del directorio que revisa']
+  fecha_revision timestamp
+
+  indexes {
+    usuario_id
+    estado
+  }
+
+  Note: 'Documentos para verificar residencia del vecino antes de activarlo.'
+}
+
+// ---------------------------------------------------------------------
+// CERTIFICADOS DE RESIDENCIA (RF-08 a RF-12)
+// ---------------------------------------------------------------------
+Table solicitud_certificado {
+  id int [pk, increment]
+  usuario_id int [not null, ref: > usuario.id]
+  estado estado_certificado [not null, default: 'pendiente']
+  folio varchar(20) [unique, note: 'Nulo hasta que se aprueba. Unico (RF-10). Sirve para verificar (RF-12)']
+  direccion_certificada varchar(150) [note: 'Copia de la direccion al momento de emitir']
+  fecha_solicitud timestamp [not null, default: `now()`]
+  fecha_emision timestamp
+
+  indexes {
+    usuario_id
+    estado
+  }
+
+  Note: 'Solicitud y certificado de residencia. El PDF se genera al aprobar.'
+}
+
+// ---------------------------------------------------------------------
+// PROYECTOS VECINALES (RF-13 a RF-16)
+// ---------------------------------------------------------------------
+Table proyecto {
+  id int [pk, increment]
+  usuario_id int [not null, ref: > usuario.id, note: 'Vecino que postula']
+  titulo varchar(150) [not null]
+  descripcion text [not null]
+  presupuesto_estimado int [not null, note: 'En pesos chilenos']
+  estado estado_proyecto [not null, default: 'recibido']
+  fecha_postulacion timestamp [not null, default: `now()`]
+
+  indexes {
+    usuario_id
+    estado
+  }
+}
+
+Table proyecto_adjunto {
+  id int [pk, increment]
+  proyecto_id int [not null, ref: > proyecto.id]
+  nombre_archivo varchar(150) [not null]
+  ruta varchar(255) [not null]
+  tipo_mime varchar(80) [not null]
+  tamano_bytes int [not null]
+
+  indexes {
+    proyecto_id
+  }
+}
+
+// ---------------------------------------------------------------------
+// ESPACIOS COMUNITARIOS Y ACTIVIDADES (RF-17 a RF-24)
+// ---------------------------------------------------------------------
+Table espacio {
+  id int [pk, increment]
+  junta_id int [not null, ref: > junta.id]
+  nombre varchar(100) [not null]
+  tipo tipo_espacio [not null]
+  descripcion text
+  activo boolean [not null, default: true, note: 'Desactivado = no se puede reservar']
+
+  indexes {
+    junta_id
+  }
+}
+
+Table reserva {
+  id int [pk, increment]
+  espacio_id int [not null, ref: > espacio.id]
+  usuario_id int [not null, ref: > usuario.id, note: 'Vecino que solicita']
+  inicio timestamp [not null]
+  fin timestamp [not null, note: 'Debe ser posterior al inicio']
+  motivo varchar(200)
+  estado estado_reserva [not null, default: 'pendiente']
+  creado_en timestamp [not null, default: `now()`]
+
+  indexes {
+    (espacio_id, inicio, fin)
+    usuario_id
+  }
+
+  Note: 'RF-20: las reservas aprobadas de un mismo espacio no pueden cruzarse en el tiempo.'
+}
+
+Table actividad {
+  id int [pk, increment]
+  junta_id int [not null, ref: > junta.id]
+  creado_por int [not null, ref: > usuario.id, note: 'Miembro del directorio']
+  titulo varchar(150) [not null]
+  descripcion text
+  lugar varchar(150) [not null]
+  fecha_hora timestamp [not null]
+  cupo_maximo int [not null]
+  estado estado_actividad [not null, default: 'programada']
+
+  indexes {
+    junta_id
+    fecha_hora
+  }
+}
+
+Table inscripcion_actividad {
+  id int [pk, increment]
+  actividad_id int [not null, ref: > actividad.id]
+  usuario_id int [not null, ref: > usuario.id]
+  estado estado_inscripcion [not null, default: 'inscrito']
+  fecha_inscripcion timestamp [not null, default: `now()`]
+
+  indexes {
+    (actividad_id, usuario_id) [unique, note: 'Un vecino no se inscribe dos veces (RF-23)']
+  }
+
+  Note: 'RF-24: inscritos activos no pueden superar actividad.cupo_maximo.'
+}
+
+// ---------------------------------------------------------------------
+// AVISOS Y NOTICIAS (RF-25 a RF-28)
+// ---------------------------------------------------------------------
+Table aviso {
+  id int [pk, increment]
+  junta_id int [not null, ref: > junta.id]
+  autor_id int [not null, ref: > usuario.id]
+  titulo varchar(150) [not null]
+  mensaje text [not null]
+  afiche_url varchar(255)
+  fecha_creacion timestamp [not null, default: `now()`]
+  fecha_envio_correo timestamp [note: 'Nulo = aun no enviado. El enlace de WhatsApp se genera con el mensaje']
+
+  indexes {
+    junta_id
+  }
+}
+
+Table notificacion_enviada {
+  id int [pk, increment]
+  aviso_id int [not null, ref: > aviso.id]
+  usuario_id int [not null, ref: > usuario.id]
+  canal canal_notificacion [not null]
+  estado estado_notificacion [not null, default: 'enviado']
+  fecha_envio timestamp [not null, default: `now()`]
+  fecha_lectura timestamp
+
+  indexes {
+    (aviso_id, usuario_id)
+    usuario_id
+    estado
+  }
+
+  Note: 'Registro de a que vecinos se les envio cada aviso y por que canal (RNF-09).'
+}
+
+Table noticia {
+  id int [pk, increment]
+  junta_id int [not null, ref: > junta.id]
+  autor_id int [not null, ref: > usuario.id]
+  titulo varchar(150) [not null]
+  contenido text [not null]
+  imagen_url varchar(255)
+  fecha_publicacion timestamp [not null, default: `now()`]
+
+  indexes {
+    (junta_id, fecha_publicacion)
+  }
+}
+
+// ---------------------------------------------------------------------
+// TRAZABILIDAD (RNF-09)
+// ---------------------------------------------------------------------
+Table historial_estado {
+  id int [pk, increment]
+  tipo tipo_entidad [not null, note: 'A que tabla se refiere entidad_id']
+  entidad_id int [not null, note: 'Id del registro (sin FK, porque apunta a varias tablas)']
+  estado_anterior varchar(30)
+  estado_nuevo varchar(30) [not null]
+  motivo text [note: 'Obligatorio al rechazar']
+  responsable_id int [not null, ref: > usuario.id, note: 'Quien hizo el cambio']
+  fecha timestamp [not null, default: `now()`]
+
+  indexes {
+    (tipo, entidad_id)
+    responsable_id
+  }
+
+  Note: 'Registra fecha y responsable de cada cambio de estado de inscripciones, certificados, proyectos y reservas.'
+}
+
+// ---------------------------------------------------------------------
+// GRUPOS (para ordenar el diagrama por modulo)
+// ---------------------------------------------------------------------
+TableGroup configuracion {
+  junta
+  directorio_integrante
+}
+
+TableGroup acceso_y_vecinos {
+  usuario
+  token_recuperacion
+  sesion
+}
+
+TableGroup verificacion {
+  documento_verificacion
+}
+
+TableGroup certificados {
+  solicitud_certificado
+}
+
+TableGroup proyectos_vecinales {
+  proyecto
+  proyecto_adjunto
+}
+
+TableGroup espacios_y_actividades {
+  espacio
+  reserva
+  actividad
+  inscripcion_actividad
+}
+
+TableGroup avisos_y_noticias {
+  aviso
+  notificacion_enviada
+  noticia
+}
+
+TableGroup trazabilidad {
+  historial_estado
+}

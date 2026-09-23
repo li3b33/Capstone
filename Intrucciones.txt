@@ -1,0 +1,10 @@
+cd "C:\Users\barri\OneDrive\Desktop\Capstone\Fase 2\sistema-unidad-territorial"
+cd backend npm run dev
+cd frontend npm run dev
+
+
+(CMD) 
+psql -U postgres -d junta_vecinos
+SELECT id, rut, nombres, apellidos, correo, rol, estado FROM usuario WHERE estado = 'pendiente';
+SELECT id, rut, nombres, correo, rol, estado FROM usuario WHERE correo = 'vecino@correo.com';
+UPDATE usuario SET estado = 'activo' WHERE correo = 'vecino@correo.com';
