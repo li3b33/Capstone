@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import PanelVecino from './pages/PanelVecino';
 import PanelDirectorio from './pages/PanelDirectorio';
+import GestionVecinos from './pages/GestionVecinos';
 import './App.css';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/panel-vecino" element={<PanelVecino />} />
             <Route path="/panel-directorio" element={<PanelDirectorio />} />
+            <Route path="/gestion-vecinos" element={<GestionVecinos />} />
           </Routes>
         </main>
         <Footer />

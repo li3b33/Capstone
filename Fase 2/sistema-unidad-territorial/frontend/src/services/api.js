@@ -14,4 +14,11 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Funciones de usuarios
+export const getPendientes = () => api.get('/usuarios/pendientes');
+export const getVecinos = (estado) => api.get('/usuarios', { params: { estado } });
+export const getEstadisticas = () => api.get('/usuarios/estadisticas');
+export const cambiarEstadoUsuario = (id, estado, motivo) =>
+  api.put(`/usuarios/${id}/estado`, { estado, motivo });
+
 export default api;

@@ -19,10 +19,7 @@ function PanelVecino() {
         <div>
           <h1>Hola, {usuario.nombres} {usuario.apellidos}</h1>
           <p className="panel-subtitle">
-            Bienvenido a tu panel de vecino. Estado:{' '}
-            <span className={`badge badge-${usuario.estado === 'activo' ? 'success' : 'warning'}`}>
-              {usuario.estado}
-            </span>
+            Bienvenido a tu panel de vecino. 
           </p>
         </div>
       </header>

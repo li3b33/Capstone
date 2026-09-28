@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Card from '../components/Card';
 
 function PanelDirectorio() {
@@ -13,7 +14,9 @@ function PanelDirectorio() {
       <section className="panel-seccion">
         <h2>Pendientes</h2>
         <div className="cards-grid">
-          <Card icono="👥" titulo="Vecinos por aprobar" descripcion="1 solicitud pendiente" />
+          <Link to="/gestion-vecinos" className="card-link">
+            <Card icono="👥" titulo="Vecinos por aprobar" descripcion="Ver y gestionar inscripciones" />
+          </Link>
           <Card icono="📄" titulo="Certificados por emitir" descripcion="2 solicitudes" />
           <Card icono="📋" titulo="Proyectos por revisar" descripcion="1 en revisión" />
           <Card icono="🏟️" titulo="Reservas por aprobar" descripcion="2 solicitudes" />
