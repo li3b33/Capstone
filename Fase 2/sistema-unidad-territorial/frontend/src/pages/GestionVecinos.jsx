@@ -1,37 +1,44 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { getVecinos, cambiarEstadoUsuario } from '../services/api';
 
 function GestionVecinos() {
   const [vecinos, setVecinos] = useState([]);
   const [filtro, setFiltro] = useState('pendiente');
-  const [cargando, setCargando] = useState(true);
+  const [cargando, setCargando] = useState(false);
   const [mensaje, setMensaje] = useState('');
 
-  const cargarVecinos = async () => {
-    setCargando(true);
+  const cargarVecinos = useCallback(async () => {
     try {
       const res = await getVecinos(filtro === 'todos' ? null : filtro);
       setVecinos(res.data);
     } catch (error) {
       console.error('Error al cargar vecinos:', error);
-    } finally {
-      setCargando(false);
     }
-  };
+  }, [filtro]);
 
   useEffect(() => {
-    cargarVecinos();
-  }, [filtro]);
+    let activo = true;
+    const cargarConEstado = async () => {
+      setCargando(true);
+      try {
+        await cargarVecinos();
+      } finally {
+        if (activo) setCargando(false);
+      }
+    };
+    cargarConEstado();
+    return () => {
+      activo = false;
+    };
+  }, [cargarVecinos]);
 
   const handleCambiarEstado = async (id, nuevoEstado) => {
     const motivo = nuevoEstado === 'rechazado'
       ? prompt('Motivo del rechazo (obligatorio):')
       : null;
 
-    if (nuevoEstado === 'rechazado' && !motivo) {
-      return; // cancelado
-    }
+    if (nuevoEstado === 'rechazado' && !motivo) return;
 
     try {
       await cambiarEstadoUsuario(id, nuevoEstado, motivo);
@@ -63,33 +70,18 @@ function GestionVecinos() {
         </div>
       </header>
 
-      {mensaje && <div className="alert alert-success">{mensaje}</div>}
+      {mensaje && <div className="alert alert-success" role="status">{mensaje}</div>}
 
       <div className="filtros">
-        <button
-          className={filtro === 'pendiente' ? 'btn-filtro active' : 'btn-filtro'}
-          onClick={() => setFiltro('pendiente')}
-        >
-          Pendientes
-        </button>
-        <button
-          className={filtro === 'activo' ? 'btn-filtro active' : 'btn-filtro'}
-          onClick={() => setFiltro('activo')}
-        >
-          Activos
-        </button>
-        <button
-          className={filtro === 'rechazado' ? 'btn-filtro active' : 'btn-filtro'}
-          onClick={() => setFiltro('rechazado')}
-        >
-          Rechazados
-        </button>
-        <button
-          className={filtro === 'todos' ? 'btn-filtro active' : 'btn-filtro'}
-          onClick={() => setFiltro('todos')}
-        >
-          Todos
-        </button>
+        {['pendiente', 'activo', 'rechazado', 'todos'].map((f) => (
+          <button
+            key={f}
+            className={filtro === f ? 'btn-filtro active' : 'btn-filtro'}
+            onClick={() => setFiltro(f)}
+          >
+            {f.charAt(0).toUpperCase() + f.slice(1)}
+          </button>
+        ))}
       </div>
 
       {cargando ? (
@@ -120,43 +112,18 @@ function GestionVecinos() {
                   <td className="acciones">
                     {v.estado === 'pendiente' && (
                       <>
-                        <button
-                          className="btn-accion btn-aprobar"
-                          onClick={() => handleCambiarEstado(v.id, 'activo')}
-                        >
-                          ✓ Activar
-                        </button>
-                        <button
-                          className="btn-accion btn-rechazar"
-                          onClick={() => handleCambiarEstado(v.id, 'rechazado')}
-                        >
-                          ✗ Rechazar
-                        </button>
+                        <button className="btn-accion btn-aprobar" onClick={() => handleCambiarEstado(v.id, 'activo')}>✓ Activar</button>
+                        <button className="btn-accion btn-rechazar" onClick={() => handleCambiarEstado(v.id, 'rechazado')}>✗ Rechazar</button>
                       </>
                     )}
                     {v.estado === 'activo' && (
-                      <button
-                        className="btn-accion btn-rechazar"
-                        onClick={() => handleCambiarEstado(v.id, 'baja')}
-                      >
-                        Dar de baja
-                      </button>
+                      <button className="btn-accion btn-rechazar" onClick={() => handleCambiarEstado(v.id, 'baja')}>Dar de baja</button>
                     )}
                     {v.estado === 'rechazado' && (
-                      <button
-                        className="btn-accion btn-aprobar"
-                        onClick={() => handleCambiarEstado(v.id, 'activo')}
-                      >
-                        ✓ Activar
-                      </button>
+                      <button className="btn-accion btn-aprobar" onClick={() => handleCambiarEstado(v.id, 'activo')}>✓ Activar</button>
                     )}
                     {v.estado === 'baja' && (
-                      <button
-                        className="btn-accion btn-aprobar"
-                        onClick={() => handleCambiarEstado(v.id, 'activo')}
-                      >
-                        ✓ Reactivar
-                      </button>
+                      <button className="btn-accion btn-aprobar" onClick={() => handleCambiarEstado(v.id, 'activo')}>✓ Reactivar</button>
                     )}
                   </td>
                 </tr>

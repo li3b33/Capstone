@@ -45,47 +45,47 @@ function Register() {
         <h1>Registro de Vecino</h1>
         <p className="auth-subtitle">Completa tus datos para inscribirte en la junta de vecinos</p>
 
-        {error && <div className="alert alert-error">{error}</div>}
-        {exito && <div className="alert alert-success">{exito}</div>}
+        {error && <div className="alert alert-error" role="alert">{error}</div>}
+        {exito && <div className="alert alert-success" role="status">{exito}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-row">
             <div className="form-group">
-              <label>RUT *</label>
-              <input name="rut" placeholder="12.345.678-9" onChange={handleChange} required />
+              <label htmlFor="reg-rut">RUT *</label>
+              <input id="reg-rut" name="rut" placeholder="12.345.678-9" onChange={handleChange} required aria-required="true" />
             </div>
             <div className="form-group">
-              <label>Teléfono</label>
-              <input name="telefono" placeholder="+56 9 1234 5678" onChange={handleChange} />
+              <label htmlFor="reg-telefono">Teléfono</label>
+              <input id="reg-telefono" name="telefono" placeholder="+56 9 1234 5678" onChange={handleChange} />
             </div>
           </div>
           <div className="form-row">
             <div className="form-group">
-              <label>Nombres *</label>
-              <input name="nombres" placeholder="Juan" onChange={handleChange} required />
+              <label htmlFor="reg-nombres">Nombres *</label>
+              <input id="reg-nombres" name="nombres" placeholder="Juan" onChange={handleChange} required aria-required="true" />
             </div>
             <div className="form-group">
-              <label>Apellidos *</label>
-              <input name="apellidos" placeholder="Pérez" onChange={handleChange} required />
+              <label htmlFor="reg-apellidos">Apellidos *</label>
+              <input id="reg-apellidos" name="apellidos" placeholder="Pérez" onChange={handleChange} required aria-required="true" />
             </div>
           </div>
           <div className="form-row">
             <div className="form-group">
-              <label>Fecha de nacimiento *</label>
-              <input type="date" name="fecha_nacimiento" onChange={handleChange} required />
+              <label htmlFor="reg-fecha">Fecha de nacimiento *</label>
+              <input id="reg-fecha" type="date" name="fecha_nacimiento" onChange={handleChange} required aria-required="true" />
             </div>
             <div className="form-group">
-              <label>Correo electrónico *</label>
-              <input type="email" name="correo" placeholder="tu@correo.cl" onChange={handleChange} required />
+              <label htmlFor="reg-correo">Correo electrónico *</label>
+              <input id="reg-correo" type="email" name="correo" placeholder="tu@correo.cl" onChange={handleChange} required aria-required="true" />
             </div>
           </div>
           <div className="form-group">
-            <label>Dirección *</label>
-            <input name="direccion" placeholder="Calle, número, depto" onChange={handleChange} required />
+            <label htmlFor="reg-direccion">Dirección *</label>
+            <input id="reg-direccion" name="direccion" placeholder="Calle, número, depto" onChange={handleChange} required aria-required="true" />
           </div>
           <div className="form-group">
-            <label>Contraseña *</label>
-            <input type="password" name="password" placeholder="Mínimo 8 caracteres" onChange={handleChange} required />
+            <label htmlFor="reg-password">Contraseña *</label>
+            <input id="reg-password" type="password" name="password" placeholder="Mínimo 8 caracteres" onChange={handleChange} required aria-required="true" />
           </div>
           <button type="submit" className="btn-primary btn-block" disabled={cargando}>
             {cargando ? 'Registrando...' : 'Registrarme'}
