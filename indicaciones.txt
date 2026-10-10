@@ -1,0 +1,31 @@
+Junta junta_vecinos
+
+Ruth (Tesorera)
+
+- Buena idea
+- Respuesta via Whatsapp debido a que los vecinos no revisan mucho su correo
+- Que los campoos obligatorios esten marcados
+- Modificar el mensaje de "exito"
+- Formato del rut automatico
+- Letra un poco mas grande
+- Segunda confirmacion
+- Carga visible
+
+
+Ruth (Tesorera)
+
+Fecha: 30 de Septiembre a las 17 horas
+Duracion:10 Minutos
+Razon:Pocpo tiempo 
+
+Se le mostro el apartado del envio de cetificados y la creacion de proyectos por parte del vecino
+
+Ruth:
+Me parece bastante completo al menos desde mi punto de vista de momento no creo que se necesite algo mas
+en esas parte al menos de forma funcional
+
+Le mostre y explique la implementacion de la WCAG 2.2 (ISO/IEC 40500:2025)
+
+Ruth:
+No sabia que era eso hasta que me lo explicaste y me parace bastante bueno al ser un estandar como tu dices
+ya que esto hace que sea mas entendible al ser un formato ampliamente utilizado en estos casos o situaciones
