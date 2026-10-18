@@ -34,27 +34,31 @@ function Login() {
         <h1>Iniciar sesión</h1>
         <p className="auth-subtitle">Accede a tu cuenta de vecino o directorio</p>
 
-        {error && <div className="alert alert-error">{error}</div>}
+        {error && <div className="alert alert-error" role="alert">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label>Correo electrónico</label>
+            <label htmlFor="login-correo">Correo electrónico</label>
             <input
+              id="login-correo"
               type="email"
               placeholder="tu@correo.cl"
               value={correo}
               onChange={(e) => setCorreo(e.target.value)}
               required
+              aria-required="true"
             />
           </div>
           <div className="form-group">
-            <label>Contraseña</label>
+            <label htmlFor="login-password">Contraseña</label>
             <input
+              id="login-password"
               type="password"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              aria-required="true"
             />
           </div>
           <button type="submit" className="btn-primary btn-block" disabled={cargando}>

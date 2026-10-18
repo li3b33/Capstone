@@ -1,10 +1,12 @@
 cd "C:\Users\barri\OneDrive\Desktop\Capstone\Fase 2\sistema-unidad-territorial"
 cd backend npm run dev
 cd frontend npm run dev
+||   ||      || ||  lint (Para poder ver las cosas del frontend que faltan por adapatar a la ISO/IEC 40500:2025)
 
 
 (CMD) 
 psql -U postgres -d junta_vecinos
+SELECT id, rut, nombres, apellidos, correo, rol, estado FROM usuario WHERE estado = 'activo';
 SELECT id, rut, nombres, apellidos, correo, rol, estado FROM usuario WHERE estado = 'pendiente';
 SELECT id, rut, nombres, correo, rol, estado FROM usuario WHERE correo = 'vecino@correo.com';
 UPDATE usuario SET estado = 'activo' WHERE correo = 'vecino@correo.com';

@@ -17,8 +17,12 @@ function PanelDirectorio() {
           <Link to="/gestion-vecinos" className="card-link">
             <Card icono="👥" titulo="Vecinos por aprobar" descripcion="Ver y gestionar inscripciones" />
           </Link>
-          <Card icono="📄" titulo="Certificados por emitir" descripcion="2 solicitudes" />
-          <Card icono="📋" titulo="Proyectos por revisar" descripcion="1 en revisión" />
+          <Link to="/gestion-certificados" className="card-link">
+            <Card icono="📄" titulo="Certificados por emitir" descripcion="Revisar solicitudes" />
+          </Link>
+          <Link to="/gestion-proyectos" className="card-link">
+            <Card icono="📋" titulo="Proyectos por revisar" descripcion="Ver y gestionar" />
+          </Link>
           <Card icono="🏟️" titulo="Reservas por aprobar" descripcion="2 solicitudes" />
         </div>
       </section>

@@ -1,20 +1,24 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState } from 'react';
 import api from '../services/api';
 
 const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
-  const [usuario, setUsuario] = useState(null);
-  const [cargando, setCargando] = useState(true);
-
-  useEffect(() => {
+// Leer el usuario del localStorage UNA VEZ al inicio
+function getUsuarioInicial() {
+  try {
     const token = localStorage.getItem('token');
     const usuarioGuardado = localStorage.getItem('usuario');
     if (token && usuarioGuardado) {
-      setUsuario(JSON.parse(usuarioGuardado));
+      return JSON.parse(usuarioGuardado);
     }
-    setCargando(false);
-  }, []);
+  } catch (e) {
+    console.error('Error al leer usuario del localStorage', e);
+  }
+  return null;
+}
+
+export function AuthProvider({ children }) {
+  const [usuario, setUsuario] = useState(getUsuarioInicial);
 
   const login = async (correo, password) => {
     const res = await api.post('/auth/login', { correo, password });
@@ -36,7 +40,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ usuario, login, registrar, logout, cargando }}>
+    <AuthContext.Provider value={{ usuario, login, registrar, logout }}>
       {children}
     </AuthContext.Provider>
   );
