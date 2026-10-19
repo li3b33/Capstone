@@ -49,7 +49,6 @@ function MisProyectos() {
   return (
     <div className="panel">
       <header className="panel-header">
-        <Link to="/panel-vecino" className="btn-volver">← Volver al panel</Link>
         <h1>Mis Proyectos</h1>
         <p className="panel-subtitle">Historial de proyectos postulados</p>
         <Link to="/postular-proyecto" className="btn-primary btn-inline">

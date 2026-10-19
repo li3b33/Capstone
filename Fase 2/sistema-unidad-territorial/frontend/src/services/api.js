@@ -49,8 +49,33 @@ export const getMisProyectos = () => api.get('/proyectos/mis-proyectos');
 export const getTodosProyectos = (estado) =>
   api.get('/proyectos/todos', { params: { estado } });
 export const revisarProyecto = (id) => api.put(`/proyectos/${id}/revisar`);
-export const aprobarProyecto = (id) => api.put(`/proyectos/${id}/aprobar`);
+export const aprobarProyecto = (id, presupuesto_estimado) => 
+  api.put(`/proyectos/${id}/aprobar`, { presupuesto_estimado });
 export const rechazarProyecto = (id, motivo) =>
   api.put(`/proyectos/${id}/rechazar`, { motivo });
+
+// Funciones de reservas (vecino)
+export const getEspacios = () => api.get('/reservas/espacios');
+export const getCalendarioReservas = (espacio_id, fecha_inicio) => 
+  api.get('/reservas/calendario', { params: { espacio_id, fecha_inicio } });
+export const solicitarReserva = (datos) => api.post('/reservas', datos);
+export const getMisReservas = () => api.get('/reservas/mis-reservas');
+
+// Funciones de reservas (directorio)
+export const getTodasReservas = (estado) => 
+  api.get('/reservas/todas', { params: { estado } });
+export const cambiarEstadoReserva = (id, estado) => 
+  api.put(`/reservas/${id}/estado`, { estado });
+
+// Funciones de actividades
+export const getActividades = () => api.get('/actividades');
+export const crearActividad = (datos) => api.post('/actividades', datos);
+export const inscribirseActividad = (id) => api.post(`/actividades/${id}/inscribirse`);
+export const getMisInscripciones = () => api.get('/actividades/mis-inscripciones');
+
+// Funciones de noticias
+export const getNoticias = () => api.get('/noticias');
+export const crearNoticia = (datos) => api.post('/noticias', datos);
+export const eliminarNoticia = (id) => api.delete(`/noticias/${id}`);
 
 export default api;

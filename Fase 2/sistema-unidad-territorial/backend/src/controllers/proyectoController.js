@@ -5,22 +5,25 @@ const {
 } = require('../services/emailService');
 
 // ============================================
-// VECINO POSTULA UN PROYECTO
+// VECINO POSTULA UN PROYECTO (Presupuesto Opcional)
 // ============================================
 const postular = async (req, res) => {
   const usuarioId = req.usuario.id;
   const { titulo, descripcion, presupuesto_estimado } = req.body;
 
-  if (!titulo || !descripcion || !presupuesto_estimado) {
-    return res.status(400).json({ error: 'Título, descripción y presupuesto son obligatorios' });
+  if (!titulo || !descripcion) {
+    return res.status(400).json({ error: 'El título y la descripción son obligatorios' });
   }
 
   try {
+    // Si no envía presupuesto, guardamos NULL en la BD
+    const presupuesto = presupuesto_estimado ? parseInt(presupuesto_estimado, 10) : null;
+
     const result = await pool.query(
       `INSERT INTO proyecto (usuario_id, titulo, descripcion, presupuesto_estimado, estado)
        VALUES ($1, $2, $3, $4, 'recibido')
        RETURNING id, titulo, estado, fecha_postulacion`,
-      [usuarioId, titulo, descripcion, presupuesto_estimado]
+      [usuarioId, titulo, descripcion, presupuesto]
     );
 
     await pool.query(
@@ -30,7 +33,7 @@ const postular = async (req, res) => {
     );
 
     res.status(201).json({
-      mensaje: 'Proyecto postulado. El directorio lo revisará pronto.',
+      mensaje: 'Idea postulada. El directorio la revisará y estimará el presupuesto.',
       proyecto: result.rows[0],
     });
   } catch (error) {
@@ -113,11 +116,16 @@ const revisar = async (req, res) => {
 };
 
 // ============================================
-// DIRECTORIO: APROBAR PROYECTO
+// DIRECTORIO: APROBAR Y ASIGNAR PRESUPUESTO
 // ============================================
 const aprobar = async (req, res) => {
   const { id } = req.params;
+  const { presupuesto_estimado } = req.body; // El directorio envía el presupuesto final
   const directorId = req.usuario.id;
+
+  if (!presupuesto_estimado || presupuesto_estimado <= 0) {
+    return res.status(400).json({ error: 'Debes asignar un presupuesto válido antes de aprobar' });
+  }
 
   try {
     const proyecto = await pool.query(
@@ -132,10 +140,12 @@ const aprobar = async (req, res) => {
     }
 
     const estadoAnterior = proyecto.rows[0].estado;
+    
+    // Actualizamos estado Y presupuesto
     const result = await pool.query(
-      `UPDATE proyecto SET estado = 'aprobado' WHERE id = $1
+      `UPDATE proyecto SET estado = 'aprobado', presupuesto_estimado = $1 WHERE id = $2
        RETURNING id, titulo, estado, presupuesto_estimado`,
-      [id]
+      [presupuesto_estimado, id]
     );
 
     await pool.query(
@@ -145,9 +155,11 @@ const aprobar = async (req, res) => {
     );
 
     const usuario = proyecto.rows[0];
+    const proyectoActualizado = result.rows[0];
+    
     let emailEnviado = false;
     try {
-      await enviarProyectoAprobado(usuario, result.rows[0]);
+      await enviarProyectoAprobado(usuario, proyectoActualizado);
       emailEnviado = true;
     } catch (emailError) {
       console.error('⚠️ Error al enviar email:', emailError.message);
@@ -155,9 +167,9 @@ const aprobar = async (req, res) => {
 
     res.json({
       mensaje: emailEnviado
-        ? 'Proyecto aprobado y notificado por email'
+        ? 'Proyecto aprobado con presupuesto asignado y notificado por email'
         : 'Proyecto aprobado (no se pudo enviar el email)',
-      proyecto: result.rows[0],
+      proyecto: proyectoActualizado,
       emailEnviado,
     });
   } catch (error) {
@@ -208,9 +220,7 @@ const rechazar = async (req, res) => {
     }
 
     res.json({
-      mensaje: emailEnviado
-        ? 'Proyecto rechazado y notificado por email'
-        : 'Proyecto rechazado (no se pudo enviar el email)',
+      mensaje: emailEnviado ? 'Proyecto rechazado y notificado' : 'Proyecto rechazado',
       emailEnviado,
     });
   } catch (error) {

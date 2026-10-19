@@ -1,70 +1,83 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Card from '../components/Card';
+import { getNoticias } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 function Home() {
+  const { usuario } = useAuth();
+  const [noticias, setNoticias] = useState([]);
+  const [cargando, setCargando] = useState(true);
+
+  useEffect(() => {
+    getNoticias()
+      .then((res) => setNoticias(res.data))
+      .catch((err) => console.error("Error al cargar noticias:", err))
+      .finally(() => setCargando(false));
+  }, []);
+
+  const formatearFecha = (fecha) => new Date(fecha).toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric' });
+
   return (
     <div className="home">
-      {/* Hero */}
-      <section className="hero">
-        <h1>Bienvenido a la Junta de Vecinos</h1>
-        <p>
-          Sistema de gestión para la unidad territorial. Realiza trámites,
-          revisa noticias y participa en las actividades de tu comunidad.
-        </p>
-        <div className="hero-buttons">
-          <Link to="/register" className="btn-primary">Inscribirme</Link>
-          <Link to="/login" className="btn-secondary">Iniciar sesión</Link>
+      {/* CABECERA DINÁMICA */}
+      <header className="panel-header" style={{ borderBottom: 'none', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h1>{usuario ? `Hola, ${usuario.nombres} 👋` : 'Bienvenido a la Junta de Vecinos'}</h1>
+          <p className="panel-subtitle">
+            {usuario 
+              ? 'Este es el muro de noticias de tu comunidad.' 
+              : 'Mantente al día con las últimas novedades de tu barrio.'}
+          </p>
         </div>
-      </section>
+        
+        {/* Si NO hay usuario, mostramos botones de login/registro a la derecha */}
+        {!usuario && (
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <Link to="/login" className="btn-primary">Iniciar Sesión</Link>
+            <Link to="/register" className="btn-secondary">Registrarse</Link>
+          </div>
+        )}
 
-      {/* Servicios */}
-      <section className="servicios">
-        <h2>¿Qué puedes hacer?</h2>
-        <div className="cards-grid">
-          <Card
-            icono="📄"
-            titulo="Certificados de residencia"
-            descripcion="Solicita tu certificado de residencia de forma online y recíbelo en tu correo."
-          />
-          <Card
-            icono="📋"
-            titulo="Postular proyectos"
-            descripcion="Presenta ideas para mejorar tu barrio y súmalas al presupuesto participativo."
-          />
-          <Card
-            icono="🏟️"
-            titulo="Reservar espacios"
-            descripcion="Solicita la cancha, la sede o la plaza para tus actividades comunitarias."
-          />
-          <Card
-            icono="📢"
-            titulo="Avisos y noticias"
-            descripcion="Mantente informado sobre las novedades y eventos de la junta de vecinos."
-          />
-        </div>
-      </section>
+        {/* Si HAY usuario y es director, mostramos botón para publicar */}
+        {usuario?.rol === 'directorio' && (
+          <Link to="/gestion-noticias" className="btn-secondary">
+            + Publicar noticia
+          </Link>
+        )}
+      </header>
 
-      {/* Noticias recientes */}
-      <section className="noticias">
-        <h2>Últimas noticias</h2>
-        <div className="cards-grid">
-          <article className="noticia-card">
-            <h3>Nueva directiva 2024-2026</h3>
-            <p>En asamblea general se eligió la nueva directiva de la junta.</p>
-            <small>20 de enero, 2024</small>
-          </article>
-          <article className="noticia-card">
-            <h3>Proyecto de áreas verdes aprobado</h3>
-            <p>El proyecto de mejoramiento de áreas verdes fue aprobado.</p>
-            <small>1 de febrero, 2024</small>
-          </article>
-          <article className="noticia-card">
-            <h3>Taller de reciclaje</h3>
-            <p>Ya están abiertas las inscripciones para el taller de reciclaje.</p>
-            <small>5 de marzo, 2024</small>
-          </article>
-        </div>
-      </section>
+      {/* LISTA DE NOTICIAS (Visible siempre) */}
+      <div style={{ marginTop: '2rem' }}>
+        <h2 style={{ fontSize: '1.3rem', color: '#1e3a8a', marginBottom: '1.5rem' }}>Últimas Noticias</h2>
+        
+        {cargando ? (
+          <p>Cargando noticias...</p>
+        ) : noticias.length === 0 ? (
+          <div className="alert" style={{ background: '#f8fafc', color: '#64748b' }}>
+            No hay noticias publicadas aún.
+          </div>
+        ) : (
+          <div className="cards-grid">
+            {noticias.map((n) => (
+              <article key={n.id} className="card" style={{ cursor: 'default', display: 'flex', flexDirection: 'column' }}>
+                {n.imagen_url && (
+                  <img 
+                    src={n.imagen_url} 
+                    alt={n.titulo} 
+                    style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '6px', marginBottom: '1rem' }} 
+                  />
+                )}
+                <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>{n.titulo}</h3>
+                <p style={{ fontSize: '0.9rem', color: '#64748b', flex: 1 }}>{n.contenido}</p>
+                <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb', fontSize: '0.8rem', color: '#9ca3af', display: 'flex', justifyContent: 'space-between' }}>
+                  <span>{formatearFecha(n.fecha_publicacion)}</span>
+                  <span>Por: {n.autor_nombres}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

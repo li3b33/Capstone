@@ -59,7 +59,6 @@ function MisCertificados() {
   return (
     <div className="panel">
       <header className="panel-header">
-        <Link to="/panel-vecino" className="btn-volver">← Volver al panel</Link>
         <h1>Mis Certificados</h1>
         <p className="panel-subtitle">
           Historial de solicitudes y certificados emitidos
