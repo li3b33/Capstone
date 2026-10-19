@@ -108,7 +108,6 @@ function GestionCertificados() {
   return (
     <div className="panel">
       <header className="panel-header">
-        <Link to="/panel-directorio" className="btn-volver">← Volver al panel</Link>
         <h1>Gestión de Certificados</h1>
         <p className="panel-subtitle">Aprueba o rechaza las solicitudes de certificados de residencia</p>
       </header>

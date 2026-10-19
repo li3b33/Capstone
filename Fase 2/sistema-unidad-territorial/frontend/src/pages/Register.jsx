@@ -39,9 +39,9 @@ function Register() {
     }
   };
 
-  return (
-    <div className="auth-container">
-      <div className="auth-card auth-card-wide">
+    return (
+    <div className="auth-wrapper">
+      <div className="auth-card wide">
         <h1>Registro de Vecino</h1>
         <p className="auth-subtitle">Completa tus datos para inscribirte en la junta de vecinos</p>
 
@@ -52,7 +52,7 @@ function Register() {
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="reg-rut">RUT *</label>
-              <input id="reg-rut" name="rut" placeholder="12.345.678-9" onChange={handleChange} required aria-required="true" />
+              <input id="reg-rut" name="rut" placeholder="12.345.678-9" onChange={handleChange} required />
             </div>
             <div className="form-group">
               <label htmlFor="reg-telefono">Teléfono</label>
@@ -62,38 +62,38 @@ function Register() {
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="reg-nombres">Nombres *</label>
-              <input id="reg-nombres" name="nombres" placeholder="Juan" onChange={handleChange} required aria-required="true" />
+              <input id="reg-nombres" name="nombres" placeholder="Juan" onChange={handleChange} required />
             </div>
             <div className="form-group">
               <label htmlFor="reg-apellidos">Apellidos *</label>
-              <input id="reg-apellidos" name="apellidos" placeholder="Pérez" onChange={handleChange} required aria-required="true" />
+              <input id="reg-apellidos" name="apellidos" placeholder="Pérez" onChange={handleChange} required />
             </div>
           </div>
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="reg-fecha">Fecha de nacimiento *</label>
-              <input id="reg-fecha" type="date" name="fecha_nacimiento" onChange={handleChange} required aria-required="true" />
+              <input id="reg-fecha" type="date" name="fecha_nacimiento" onChange={handleChange} required />
             </div>
             <div className="form-group">
               <label htmlFor="reg-correo">Correo electrónico *</label>
-              <input id="reg-correo" type="email" name="correo" placeholder="tu@correo.cl" onChange={handleChange} required aria-required="true" />
+              <input id="reg-correo" type="email" name="correo" placeholder="tu@correo.cl" onChange={handleChange} required />
             </div>
           </div>
           <div className="form-group">
             <label htmlFor="reg-direccion">Dirección *</label>
-            <input id="reg-direccion" name="direccion" placeholder="Calle, número, depto" onChange={handleChange} required aria-required="true" />
+            <input id="reg-direccion" name="direccion" placeholder="Calle, número, depto" onChange={handleChange} required />
           </div>
           <div className="form-group">
             <label htmlFor="reg-password">Contraseña *</label>
-            <input id="reg-password" type="password" name="password" placeholder="Mínimo 8 caracteres" onChange={handleChange} required aria-required="true" />
+            <input id="reg-password" type="password" name="password" placeholder="Mínimo 8 caracteres" onChange={handleChange} required />
           </div>
-          <button type="submit" className="btn-primary btn-block" disabled={cargando}>
+          <button type="submit" className="btn-primary" disabled={cargando}>
             {cargando ? 'Registrando...' : 'Registrarme'}
           </button>
         </form>
 
         <div className="auth-footer">
-          <Link to="/login">¿Ya tienes cuenta? Inicia sesión</Link>
+          ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
         </div>
       </div>
     </div>

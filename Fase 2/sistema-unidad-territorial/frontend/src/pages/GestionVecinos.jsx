@@ -64,7 +64,6 @@ function GestionVecinos() {
     <div className="panel">
       <header className="panel-header">
         <div>
-          <Link to="/panel-directorio" className="btn-volver">← Volver al panel</Link>
           <h1>Gestión de Vecinos</h1>
           <p className="panel-subtitle">Aprueba, rechaza o gestiona las inscripciones</p>
         </div>

@@ -23,14 +23,11 @@ function PostularProyecto() {
     setExito('');
     setEnviando(true);
     try {
-      await postularProyecto({
-        ...form,
-        presupuesto_estimado: parseInt(form.presupuesto_estimado, 10),
-      });
-      setExito('¡Proyecto postulado! El directorio lo revisará pronto.');
-      setTimeout(() => navigate('/mis-proyectos'), 2000);
+      await postularProyecto(form);
+      setExito('¡Idea enviada! El directorio revisará tu proyecto y estimará el presupuesto.');
+      setTimeout(() => navigate('/mis-proyectos'), 2500);
     } catch (err) {
-      setError(err.response?.data?.error || 'Error al postular el proyecto');
+      setError(err.response?.data?.error || 'Error al postular la idea');
     } finally {
       setEnviando(false);
     }
@@ -39,10 +36,9 @@ function PostularProyecto() {
   return (
     <div className="panel">
       <header className="panel-header">
-        <Link to="/panel-vecino" className="btn-volver">← Volver al panel</Link>
-        <h1>Postular Proyecto Vecinal</h1>
+        <h1>Sugerir Proyecto Vecinal</h1>
         <p className="panel-subtitle">
-          Presenta una idea para mejorar tu barrio. El directorio la revisará.
+          Cuéntanos tu idea para mejorar el barrio. No necesitas saber de costos, el directorio se encargará de eso.
         </p>
       </header>
 
@@ -52,11 +48,11 @@ function PostularProyecto() {
       <div className="certificado-card">
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label htmlFor="titulo">Título del proyecto *</label>
+            <label htmlFor="titulo">Título de la idea *</label>
             <input
               id="titulo"
               name="titulo"
-              placeholder="Ej: Mejoramiento de áreas verdes"
+              placeholder="Ej: Pintar la sede social, arreglar los juegos de la plaza..."
               value={form.titulo}
               onChange={handleChange}
               required
@@ -64,11 +60,11 @@ function PostularProyecto() {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="descripcion">Descripción *</label>
+            <label htmlFor="descripcion">Descripción de la idea *</label>
             <textarea
               id="descripcion"
               name="descripcion"
-              placeholder="Describe tu idea, qué problema resuelve y cómo beneficia al barrio"
+              placeholder="Describe qué te gustaría hacer, por qué es importante y a quiénes beneficia."
               value={form.descripcion}
               onChange={handleChange}
               required
@@ -77,21 +73,22 @@ function PostularProyecto() {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="presupuesto">Presupuesto estimado (CLP) *</label>
+            <label htmlFor="presupuesto">Sugerencia de presupuesto (Opcional)</label>
             <input
               id="presupuesto"
               type="number"
               name="presupuesto_estimado"
-              placeholder="Ej: 1500000"
+              placeholder="Si tienes una idea del costo, ingrésalo aquí"
               value={form.presupuesto_estimado}
               onChange={handleChange}
-              required
-              aria-required="true"
               min="0"
             />
+            <small style={{ color: '#6b7280', marginTop: '0.25rem' }}>
+              Puedes dejar este campo en blanco si no sabes cuánto cuesta.
+            </small>
           </div>
           <button type="submit" className="btn-primary btn-block" disabled={enviando}>
-            {enviando ? 'Enviando...' : 'Postular proyecto'}
+            {enviando ? 'Enviando idea...' : 'Enviar sugerencia de proyecto'}
           </button>
         </form>
       </div>

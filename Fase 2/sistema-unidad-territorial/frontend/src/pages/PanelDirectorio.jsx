@@ -23,15 +23,21 @@ function PanelDirectorio() {
           <Link to="/gestion-proyectos" className="card-link">
             <Card icono="📋" titulo="Proyectos por revisar" descripcion="Ver y gestionar" />
           </Link>
-          <Card icono="🏟️" titulo="Reservas por aprobar" descripcion="2 solicitudes" />
+          <Link to="/gestion-reservas" className="card-link">
+            <Card icono="🏟️" titulo="Reservas por aprobar" descripcion="Revisar solicitudes" />
+          </Link>
         </div>
       </section>
 
       <section className="panel-seccion">
         <h2>Gestión</h2>
         <div className="cards-grid">
-          <Card icono="📢" titulo="Crear aviso" descripcion="Notificar a los vecinos" />
-          <Card icono="📰" titulo="Crear noticia" descripcion="Publicar en el sitio" />
+          <Link to="/gestion-actividades" className="card-link">
+            <Card icono="🎉" titulo="Gestionar actividades" descripcion="Crear, editar y eliminar actividades" />
+          </Link>
+          <Link to="/gestion-noticias" className="card-link">
+            <Card icono="📰" titulo="Crear noticia" descripcion="Publicar en el sitio" />
+          </Link>
           <Card icono="📊" titulo="Historial" descripcion="Ver trazabilidad" />
           <Card icono="⚙️" titulo="Configuración" descripcion="Datos de la junta" />
         </div>

@@ -28,7 +28,6 @@ function SolicitarCertificado() {
   return (
     <div className="panel">
       <header className="panel-header">
-        <Link to="/panel-vecino" className="btn-volver">← Volver al panel</Link>
         <h1>Solicitar Certificado de Residencia</h1>
         <p className="panel-subtitle">
           El directorio revisará tu solicitud y recibirás la resolución.

@@ -13,6 +13,9 @@ function GestionProyectos() {
   const [cargando, setCargando] = useState(false);
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
+  
+  // Estado para controlar el modal
+  const [proyectoSeleccionado, setProyectoSeleccionado] = useState(null);
 
   const cargar = useCallback(async () => {
     setError('');
@@ -45,6 +48,7 @@ function GestionProyectos() {
       await revisarProyecto(id);
       setMensaje('Proyecto marcado en revisión');
       setTimeout(() => setMensaje(''), 3000);
+      setProyectoSeleccionado(null); // Cerramos el modal si estaba abierto
       cargar();
     } catch (err) {
       alert(err.response?.data?.error || 'Error al revisar');
@@ -52,11 +56,19 @@ function GestionProyectos() {
   };
 
   const handleAprobar = async (id) => {
-    if (!confirm('¿Aprobar este proyecto? Se enviará un correo al vecino.')) return;
+    const presupuesto = prompt('Ingresa el presupuesto estimado (en CLP) para aprobar este proyecto:');
+    
+    if (presupuesto === null) return;
+    if (!presupuesto || isNaN(presupuesto) || parseInt(presupuesto) <= 0) {
+      alert('Debes ingresar un número válido mayor a 0');
+      return;
+    }
+
     try {
-      const res = await aprobarProyecto(id);
+      const res = await aprobarProyecto(id, parseInt(presupuesto, 10));
       setMensaje(res.data.mensaje);
       setTimeout(() => setMensaje(''), 4000);
+      setProyectoSeleccionado(null);
       cargar();
     } catch (err) {
       alert(err.response?.data?.error || 'Error al aprobar');
@@ -73,6 +85,7 @@ function GestionProyectos() {
       const res = await rechazarProyecto(id, motivo);
       setMensaje(res.data.mensaje);
       setTimeout(() => setMensaje(''), 4000);
+      setProyectoSeleccionado(null);
       cargar();
     } catch (err) {
       alert(err.response?.data?.error || 'Error al rechazar');
@@ -97,16 +110,15 @@ function GestionProyectos() {
   };
 
   const formatearMonto = (monto) => {
-    if (!monto) return '—';
+    if (!monto) return 'Por estimar';
     return '$' + Number(monto).toLocaleString('es-CL');
   };
 
   return (
     <div className="panel">
       <header className="panel-header">
-        <Link to="/panel-directorio" className="btn-volver">← Volver al panel</Link>
         <h1>Gestión de Proyectos</h1>
-        <p className="panel-subtitle">Revisa, aprueba o rechaza los proyectos vecinales</p>
+        <p className="panel-subtitle">Revisa las ideas de los vecinos y asígnales un presupuesto</p>
       </header>
 
       {mensaje && <div className="alert alert-success" role="status">{mensaje}</div>}
@@ -133,7 +145,7 @@ function GestionProyectos() {
           <table className="tabla">
             <thead>
               <tr>
-                <th>Título</th>
+                <th>Propuesta</th>
                 <th>Vecino</th>
                 <th>Presupuesto</th>
                 <th>Fecha</th>
@@ -144,30 +156,62 @@ function GestionProyectos() {
             <tbody>
               {proyectos.map((p) => (
                 <tr key={p.id}>
-                  <td>{p.titulo}</td>
+                  <td>
+                    <strong>{p.titulo}</strong>
+                  </td>
                   <td>{p.nombres} {p.apellidos}</td>
                   <td>{formatearMonto(p.presupuesto_estimado)}</td>
                   <td>{formatearFecha(p.fecha_postulacion)}</td>
                   <td><span className={getBadgeClass(p.estado)}>{p.estado}</span></td>
                   <td className="acciones">
-                    {p.estado === 'recibido' && (
-                      <button className="btn-accion btn-revisar" onClick={() => handleRevisar(p.id)}>
-                        🔍 Revisar
-                      </button>
-                    )}
-                    {(p.estado === 'recibido' || p.estado === 'en_revision') && (
-                      <>
-                        <button className="btn-accion btn-aprobar" onClick={() => handleAprobar(p.id)}>✓ Aprobar</button>
-                        <button className="btn-accion btn-rechazar" onClick={() => handleRechazar(p.id)}>✗ Rechazar</button>
-                      </>
-                    )}
-                    {p.estado === 'aprobado' && <span className="texto-info">✓ Aprobado</span>}
-                    {p.estado === 'rechazado' && <span className="texto-error">✗ Rechazado</span>}
+                    <button className="btn-accion btn-revisar" onClick={() => setProyectoSeleccionado(p)}>
+                      👁️ Leer
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* MODAL DE LECTURA DE PROPUESTA */}
+      {proyectoSeleccionado && (
+        <div className="modal-overlay" onClick={() => setProyectoSeleccionado(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setProyectoSeleccionado(null)}>×</button>
+            
+            <h2>{proyectoSeleccionado.titulo}</h2>
+            
+            <div className="modal-info">
+              <p><strong>Propuesto por:</strong> {proyectoSeleccionado.nombres} {proyectoSeleccionado.apellidos} ({proyectoSeleccionado.rut})</p>
+              <p><strong>Fecha de postulación:</strong> {formatearFecha(proyectoSeleccionado.fecha_postulacion)}</p>
+              <p><strong>Presupuesto sugerido por el vecino:</strong> {formatearMonto(proyectoSeleccionado.presupuesto_estimado)}</p>
+              <p><strong>Estado actual:</strong> <span className={getBadgeClass(proyectoSeleccionado.estado)}>{proyectoSeleccionado.estado}</span></p>
+            </div>
+
+            <h3 style={{ color: '#1e3a8a', marginTop: '1.5rem', marginBottom: '0.5rem' }}>Descripción de la idea:</h3>
+            <div className="modal-descripcion">
+              {proyectoSeleccionado.descripcion}
+            </div>
+
+            {/* Acciones dentro del modal (solo si está pendiente) */}
+            {(proyectoSeleccionado.estado === 'recibido' || proyectoSeleccionado.estado === 'en_revision') && (
+              <div className="modal-acciones">
+                {proyectoSeleccionado.estado === 'recibido' && (
+                  <button className="btn-accion btn-revisar" style={{ flex: 1, padding: '0.75rem' }} onClick={() => handleRevisar(proyectoSeleccionado.id)}>
+                    🔍 Marcar en revisión
+                  </button>
+                )}
+                <button className="btn-accion btn-aprobar" style={{ flex: 1, padding: '0.75rem' }} onClick={() => handleAprobar(proyectoSeleccionado.id)}>
+                  ✓ Aprobar
+                </button>
+                <button className="btn-accion btn-rechazar" style={{ flex: 1, padding: '0.75rem' }} onClick={() => handleRechazar(proyectoSeleccionado.id)}>
+                  ✗ Rechazar
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
