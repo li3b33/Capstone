@@ -28,11 +28,11 @@ function Login() {
     }
   };
 
-  return (
-    <div className="auth-container">
+    return (
+    <div className="auth-wrapper">
       <div className="auth-card">
-        <h1>Iniciar sesión</h1>
-        <p className="auth-subtitle">Accede a tu cuenta de vecino o directorio</p>
+        <h1>Iniciar Sesión</h1>
+        <p className="auth-subtitle">Ingresa tus credenciales para acceder al sistema</p>
 
         {error && <div className="alert alert-error" role="alert">{error}</div>}
 
@@ -46,7 +46,6 @@ function Login() {
               value={correo}
               onChange={(e) => setCorreo(e.target.value)}
               required
-              aria-required="true"
             />
           </div>
           <div className="form-group">
@@ -58,16 +57,15 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              aria-required="true"
             />
           </div>
-          <button type="submit" className="btn-primary btn-block" disabled={cargando}>
-            {cargando ? 'Entrando...' : 'Entrar'}
+          <button type="submit" className="btn-primary" disabled={cargando}>
+            {cargando ? 'Entrando...' : 'Entrar al sistema'}
           </button>
         </form>
 
         <div className="auth-footer">
-          <Link to="/register">¿No tienes cuenta? Regístrate</Link>
+          ¿No tienes cuenta? <Link to="/register">Regístrate aquí</Link>
         </div>
       </div>
     </div>

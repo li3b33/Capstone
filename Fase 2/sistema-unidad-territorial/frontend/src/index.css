@@ -225,3 +225,86 @@ a { text-decoration: none; color: #2563eb; }
   color: white;
   border-color: #1e3a8a;
 }
+
+/* =========================================
+   ARREGLO ESPECÍFICO PARA LOGIN Y REGISTRO
+   ========================================= */
+
+/* Fondo de pantalla completa para login/registro */
+.auth-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #f1f5f9; /* Fondo gris azulado muy limpio */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 9999; /* Se pone por encima de todo */
+}
+
+/* La tarjeta blanca central */
+.auth-card {
+  background: white;
+  width: 100%;
+  max-width: 420px; /* Tamaño ideal para login */
+  padding: 3rem 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
+}
+
+/* Variante ancha para el registro */
+.auth-card.wide {
+  max-width: 650px; 
+}
+
+.auth-card h1 {
+  font-size: 1.8rem;
+  color: #1e3a8a;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.auth-subtitle {
+  text-align: center;
+  color: #64748b;
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* Quitamos el margen extra que tenían los form-group aquí */
+.auth-form .form-group {
+  margin-bottom: 0;
+}
+
+.auth-form .btn-primary {
+  margin-top: 0.5rem;
+  padding: 0.8rem;
+  font-size: 1rem;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.auth-footer a {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
