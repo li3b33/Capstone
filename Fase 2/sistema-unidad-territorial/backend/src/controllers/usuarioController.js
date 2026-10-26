@@ -6,7 +6,7 @@ const pool = require('../config/db');
 const listarPendientes = async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT id, rut, nombres, apellidos, correo, telefono, direccion, fecha_nacimiento, creado_en
+      `SELECT id, rut, nombres, apellidos, correo, telefono, direccion, fecha_nacimiento, creado_en, tipo_residente, tiempo_residencia
        FROM usuario
        WHERE estado = 'pendiente' AND rol = 'vecino'
        ORDER BY creado_en ASC`
@@ -24,7 +24,7 @@ const listarPendientes = async (req, res) => {
 const listarVecinos = async (req, res) => {
   const { estado } = req.query;
   try {
-    let query = `SELECT id, rut, nombres, apellidos, correo, telefono, direccion, estado, creado_en
+    let query = `SELECT id, rut, nombres, apellidos, correo, telefono, direccion, estado, creado_en, tipo_residente, tiempo_residencia
                  FROM usuario
                  WHERE rol = 'vecino'`;
     const params = [];

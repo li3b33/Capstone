@@ -71,11 +71,16 @@ export const cambiarEstadoReserva = (id, estado) =>
 export const getActividades = () => api.get('/actividades');
 export const crearActividad = (datos) => api.post('/actividades', datos);
 export const inscribirseActividad = (id) => api.post(`/actividades/${id}/inscribirse`);
+export const cancelarInscripcionActividad = (id) => api.put(`/actividades/${id}/cancelar`); 
 export const getMisInscripciones = () => api.get('/actividades/mis-inscripciones');
 
 // Funciones de noticias
 export const getNoticias = () => api.get('/noticias');
-export const crearNoticia = (datos) => api.post('/noticias', datos);
+export const crearNoticia = (formData) => api.post('/noticias', formData, {
+  headers: { 'Content-Type': 'multipart/form-data',
+  },
+});
 export const eliminarNoticia = (id) => api.delete(`/noticias/${id}`);
+
 
 export default api;

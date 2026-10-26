@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
@@ -22,6 +23,11 @@ app.use('/api/certificados', certificadoRoutes);
 app.use('/api/proyectos', proyectoRoutes);
 app.use('/api/reservas', reservaRoutes); 
 app.use('/api/actividades', actividadRoutes);
+app.use('/api/noticias', noticiaRoutes);
+
+
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 app.use('/api/noticias', noticiaRoutes);
 
 app.get('/', (req, res) => {

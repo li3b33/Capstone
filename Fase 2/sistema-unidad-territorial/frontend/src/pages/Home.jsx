@@ -17,6 +17,17 @@ function Home() {
 
   const formatearFecha = (fecha) => new Date(fecha).toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric' });
 
+  // Función para obtener la URL correcta de la imagen
+  const obtenerUrlImagen = (url) => {
+    if (!url) return null;
+    // Si la imagen fue subida a nuestro backend (empieza con /uploads)
+    if (url.startsWith('/uploads')) {
+      return `http://localhost:3000${url}`;
+    }
+    // Si es una URL externa antigua
+    return url;
+  };
+
   return (
     <div className="home">
       {/* CABECERA DINÁMICA */}
@@ -46,7 +57,7 @@ function Home() {
         )}
       </header>
 
-      {/* LISTA DE NOTICIAS (Visible siempre) */}
+      {/* LISTA DE NOTICIAS */}
       <div style={{ marginTop: '2rem' }}>
         <h2 style={{ fontSize: '1.3rem', color: '#1e3a8a', marginBottom: '1.5rem' }}>Últimas Noticias</h2>
         
@@ -58,23 +69,30 @@ function Home() {
           </div>
         ) : (
           <div className="cards-grid">
-            {noticias.map((n) => (
-              <article key={n.id} className="card" style={{ cursor: 'default', display: 'flex', flexDirection: 'column' }}>
-                {n.imagen_url && (
-                  <img 
-                    src={n.imagen_url} 
-                    alt={n.titulo} 
-                    style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '6px', marginBottom: '1rem' }} 
-                  />
-                )}
-                <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>{n.titulo}</h3>
-                <p style={{ fontSize: '0.9rem', color: '#64748b', flex: 1 }}>{n.contenido}</p>
-                <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb', fontSize: '0.8rem', color: '#9ca3af', display: 'flex', justifyContent: 'space-between' }}>
-                  <span>{formatearFecha(n.fecha_publicacion)}</span>
-                  <span>Por: {n.autor_nombres}</span>
-                </div>
-              </article>
-            ))}
+            {noticias.map((n) => {
+              const imagenSrc = obtenerUrlImagen(n.imagen_url);
+
+              return (
+                <article key={n.id} className="card" style={{ cursor: 'default', display: 'flex', flexDirection: 'column' }}>
+                  {/* Mostrar imagen si existe */}
+                  {imagenSrc && (
+                    <img 
+                      src={imagenSrc} 
+                      alt={n.titulo} 
+                      style={{ width: '100%', height: '160px', objectFit: 'cover', borderRadius: '8px', marginBottom: '1rem' }} 
+                    />
+                  )}
+                  
+                  <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: '#1e3a8a' }}>{n.titulo}</h3>
+                  <p style={{ fontSize: '0.9rem', color: '#64748b', flex: 1, whiteSpace: 'pre-wrap' }}>{n.contenido}</p>
+                  
+                  <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb', fontSize: '0.8rem', color: '#9ca3af', display: 'flex', justifyContent: 'space-between' }}>
+                    <span>{formatearFecha(n.fecha_publicacion)}</span>
+                    <span>Por: {n.autor_nombres}</span>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         )}
       </div>
