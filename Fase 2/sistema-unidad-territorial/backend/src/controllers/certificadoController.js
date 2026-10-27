@@ -151,11 +151,22 @@ const aprobar = async (req, res) => {
       return res.status(404).json({ error: 'Solicitud no encontrada o ya procesada' });
     }
     const anio = new Date().getFullYear();
-    const countResult = await pool.query(
-      `SELECT COUNT(*)::int AS total FROM solicitud_certificado WHERE folio IS NOT NULL`
+    const ultimoFolioQuery = await pool.query(
+      `SELECT folio FROM solicitud_certificado 
+       WHERE folio IS NOT NULL 
+       ORDER BY id DESC LIMIT 1`
     );
-    const numero = String(countResult.rows[0].total + 1).padStart(4, '0');
-    const folio = `CERT-${anio}-${numero}`;
+    
+    let numero = 1;
+    if (ultimoFolioQuery.rows.length > 0) {
+      const ultimoFolio = ultimoFolioQuery.rows[0].folio;
+      const partes = ultimoFolio.split('-');
+      numero = parseInt(partes[2], 10) + 1;
+    }
+    
+    const folio = `CERT-${anio}-${String(numero).padStart(4, '0')}`;
+    // --------------------------------------
+
     const result = await pool.query(
       `UPDATE solicitud_certificado
        SET estado = 'aprobado', folio = $1, fecha_emision = now()
@@ -163,20 +174,24 @@ const aprobar = async (req, res) => {
        RETURNING id, folio, estado, fecha_emision, direccion_certificada`,
       [folio, id]
     );
+    
     await pool.query(
       `INSERT INTO historial_estado (tipo, entidad_id, estado_anterior, estado_nuevo, responsable_id)
        VALUES ('certificado', $1, 'pendiente', 'aprobado', $2)`,
       [id, directorId]
     );
+    
     const certificado = result.rows[0];
     const usuario = solicitud.rows[0];
     let emailEnviado = false;
+    
     try {
       await enviarCertificadoAprobado(usuario, certificado);
       emailEnviado = true;
     } catch (emailError) {
       console.error('⚠️ Error al enviar email:', emailError.message);
     }
+    
     res.json({
       mensaje: emailEnviado
         ? 'Certificado aprobado y notificado por email'

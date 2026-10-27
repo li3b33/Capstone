@@ -4,7 +4,10 @@ import { getNoticias, crearNoticia, eliminarNoticia } from '../services/api';
 
 function GestionNoticias() {
   const [noticias, setNoticias] = useState([]);
-  const [form, setForm] = useState({ titulo: '', contenido: '', imagen_url: '' });
+  // Quitamos 'imagen_url' del estado y agregamos 'imagen' (el archivo)
+  const [form, setForm] = useState({ titulo: '', contenido: '' });
+  const [imagen, setImagen] = useState(null); 
+  
   const [error, setError] = useState('');
   const [exito, setExito] = useState('');
 
@@ -17,10 +20,24 @@ function GestionNoticias() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(''); setExito('');
+    
     try {
-      await crearNoticia(form);
+      // Creamos el FormData para empaquetar los textos y el archivo
+      const formData = new FormData();
+      formData.append('titulo', form.titulo);
+      formData.append('contenido', form.contenido);
+      if (imagen) {
+        formData.append('imagen', imagen);
+      }
+
+      await crearNoticia(formData);
       setExito('Noticia publicada exitosamente');
-      setForm({ titulo: '', contenido: '', imagen_url: '' });
+      setForm({ titulo: '', contenido: '' });
+      setImagen(null); // Limpiamos el archivo
+      
+      // Limpiar el input file visualmente
+      document.getElementById('input-imagen').value = '';
+      
       cargar();
     } catch (err) {
       setError(err.response?.data?.error || 'Error al crear la noticia');
@@ -40,6 +57,7 @@ function GestionNoticias() {
   return (
     <div className="panel">
       <header className="panel-header">
+        <Link to="/panel-directorio" className="btn-volver">← Volver al panel</Link>
         <h1>Gestión de Noticias</h1>
         <p className="panel-subtitle">Publica novedades para que todos los vecinos las vean en el inicio</p>
       </header>
@@ -59,8 +77,15 @@ function GestionNoticias() {
             <textarea required rows="4" value={form.contenido} onChange={e => setForm({...form, contenido: e.target.value})} placeholder="Escribe los detalles aquí..."></textarea>
           </div>
           <div className="form-group">
-            <label>URL de imagen (Opcional)</label>
-            <input value={form.imagen_url} onChange={e => setForm({...form, imagen_url: e.target.value})} placeholder="https://..." />
+            <label>Imagen de la noticia (Opcional)</label>
+            <input 
+              id="input-imagen"
+              type="file" 
+              accept="image/*" 
+              onChange={e => setImagen(e.target.files[0])} 
+              style={{ padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '8px' }}
+            />
+            <small style={{ color: '#6b7280', marginTop: '0.2rem' }}>Sube un archivo JPG o PNG.</small>
           </div>
           <button type="submit" className="btn-primary">Publicar Noticia</button>
         </form>

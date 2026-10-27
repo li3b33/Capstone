@@ -23,7 +23,7 @@ const listarNoticias = async (req, res) => {
 // CREAR NOTICIA (Solo Directorio)
 // ============================================
 const crearNoticia = async (req, res) => {
-  const { titulo, contenido, imagen_url } = req.body;
+  const { titulo, contenido } = req.body;
   const autorId = req.usuario.id;
 
   if (!titulo || !contenido) {
@@ -31,12 +31,19 @@ const crearNoticia = async (req, res) => {
   }
 
   try {
+    // Si el usuario subió una imagen, guardamos su ruta en la base de datos
+    let imagenUrl = null;
+    if (req.file) {
+      imagenUrl = `/uploads/${req.file.filename}`;
+    }
+
     const result = await pool.query(
       `INSERT INTO noticia (junta_id, autor_id, titulo, contenido, imagen_url)
        VALUES (1, $1, $2, $3, $4)
        RETURNING id, titulo, fecha_publicacion`,
-      [autorId, titulo, contenido, imagen_url || null]
+      [autorId, titulo, contenido, imagenUrl]
     );
+    
     res.status(201).json({ mensaje: 'Noticia publicada exitosamente', noticia: result.rows[0] });
   } catch (error) {
     console.error('Error al crear noticia:', error);

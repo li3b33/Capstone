@@ -55,10 +55,10 @@ const registrar = async (req, res) => {
     // Insertar usuario (junta_id = 1 por ahora)
     const result = await pool.query(
       `INSERT INTO usuario 
-        (junta_id, rut, nombres, apellidos, fecha_nacimiento, direccion, correo, telefono, password_hash, rol, estado)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'vecino', 'pendiente')
+        (junta_id, rut, nombres, apellidos, fecha_nacimiento, direccion, correo, telefono, password_hash, rol, estado, tipo_residente, tiempo_residencia)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'vecino', 'pendiente', $10, $11)
        RETURNING id, rut, nombres, apellidos, correo, rol, estado`,
-      [1, rut, nombres, apellidos, fecha_nacimiento, direccion, correo, telefono || null, passwordHash]
+      [1, rut, nombres, apellidos, fecha_nacimiento, direccion, correo, telefono || null, passwordHash, req.body.tipo_residente, req.body.tiempo_residencia]
     );
 
     res.status(201).json({

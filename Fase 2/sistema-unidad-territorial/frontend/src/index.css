@@ -308,3 +308,141 @@ a { text-decoration: none; color: #2563eb; }
 .auth-footer a:hover {
   text-decoration: underline;
 }
+
+/* ==========================================
+   ARREGLO DEL CALENDARIO (Faltaba este bloque)
+   ========================================== */
+.calendario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 2rem 0 1rem 0;
+  gap: 1rem;
+}
+
+.calendario-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  text-align: center;
+  flex: 1;
+  color: #1e3a8a;
+}
+
+.calendario-grid {
+  display: flex; /* Esto hace que los días se pongan uno al lado del otro */
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow-x: auto;
+  width: 100%;
+}
+
+.calendario-col-horas {
+  min-width: 70px;
+  border-right: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.calendario-col-dia {
+  flex: 1; /* Hace que todos los días midan lo mismo */
+  min-width: 100px;
+  border-right: 1px solid #e5e7eb;
+}
+
+.calendario-col-dia:last-child {
+  border-right: none;
+}
+
+.calendario-celda-header {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.calendario-celda-hora {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: #6b7280;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.calendario-celda-bloque {
+  height: 40px;
+  border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #991b1b;
+}
+
+.calendario-celda-bloque.disponible:hover {
+  background: #e0e7ff;
+}
+
+.calendario-celda-bloque.ocupado {
+  background: #fee2e2;
+  cursor: not-allowed;
+}
+
+.calendario-celda-bloque.seleccionado {
+  background: #2563eb;
+  color: white;
+  border: 2px solid #1e3a8a;
+}
+
+.form-group input, 
+.form-group select, 
+.form-group textarea {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: white;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.form-group input:focus, 
+.form-group select:focus, 
+.form-group textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Empieza desde arriba */
+  height: 100vh; /* Ocupa todo el alto de la pantalla */
+  width: 100vw;
+  padding: 3rem 1rem;
+  background-color: #f8fafc;
+  overflow-y: auto; /* <--- ESTO ES LA CLAVE: permite hacer scroll aquí adentro */
+}
+
+.auth-card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Para el formulario de registro que es más ancho */
+.auth-card-wide {
+  max-width: 750px; 
+}

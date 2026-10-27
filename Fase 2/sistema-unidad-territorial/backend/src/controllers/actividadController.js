@@ -54,7 +54,23 @@ const inscribirse = async (req, res) => {
   const usuarioId = req.usuario.id;
 
   try {
-    // 1. Verificar que la actividad existe y tiene cupo
+    // 1. Verificar si ya tiene un registro en esta actividad
+    const yaInscrito = await pool.query(
+      `SELECT estado FROM inscripcion_actividad 
+       WHERE actividad_id = $1 AND usuario_id = $2`,
+      [id, usuarioId]
+    );
+
+    if (yaInscrito.rows.length > 0) {
+      if (yaInscrito.rows[0].estado === 'inscrito') {
+        return res.status(400).json({ error: 'Ya estás inscrito en esta actividad' });
+      }
+      if (yaInscrito.rows[0].estado === 'cancelado') {
+        return res.status(400).json({ error: 'Cancelaste tu inscripción previamente. No es posible volver a inscribirse en esta actividad.' });
+      }
+    }
+
+    // 2. Verificar cupo
     const actQuery = await pool.query(
       `SELECT cupo_maximo, 
               (SELECT COUNT(*) FROM inscripcion_actividad WHERE actividad_id = $1 AND estado = 'inscrito') AS inscritos
@@ -72,7 +88,7 @@ const inscribirse = async (req, res) => {
       return res.status(400).json({ error: 'La actividad ya está llena' });
     }
 
-    // 2. Intentar insertar (la BD tiene una restricción UNIQUE que evita duplicados)
+    // 3. Insertar
     await pool.query(
       `INSERT INTO inscripcion_actividad (actividad_id, usuario_id, estado)
        VALUES ($1, $2, 'inscrito')`,
@@ -81,10 +97,6 @@ const inscribirse = async (req, res) => {
 
     res.status(201).json({ mensaje: 'Te has inscrito exitosamente' });
   } catch (error) {
-    // Código 23505 significa "Unique Violation" (ya está inscrito)
-    if (error.code === '23505') {
-      return res.status(400).json({ error: 'Ya estás inscrito en esta actividad' });
-    }
     console.error('Error al inscribirse:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
@@ -97,7 +109,7 @@ const misInscripciones = async (req, res) => {
   const usuarioId = req.usuario.id;
   try {
     const result = await pool.query(
-      `SELECT a.titulo, a.fecha_hora, a.lugar, ia.fecha_inscripcion, ia.estado
+      `SELECT ia.actividad_id, a.titulo, a.fecha_hora, a.lugar, ia.fecha_inscripcion, ia.estado
        FROM inscripcion_actividad ia
        JOIN actividad a ON a.id = ia.actividad_id
        WHERE ia.usuario_id = $1 ORDER BY a.fecha_hora ASC`,
@@ -109,10 +121,38 @@ const misInscripciones = async (req, res) => {
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
+// ============================================
+// VECINO: CANCELAR INSCRIPCIÓN
+// ============================================
+const cancelarInscripcion = async (req, res) => {
+  const { id } = req.params; // ID de la actividad
+  const usuarioId = req.usuario.id;
+
+  try {
+    // En lugar de borrar la fila, cambiamos el estado a 'cancelado'
+    const result = await pool.query(
+      `UPDATE inscripcion_actividad 
+       SET estado = 'cancelado' 
+       WHERE actividad_id = $1 AND usuario_id = $2 AND estado = 'inscrito'
+       RETURNING id`,
+      [id, usuarioId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'No estás inscrito en esta actividad o ya la cancelaste.' });
+    }
+
+    res.json({ mensaje: 'Inscripción cancelada exitosamente. El cupo ha sido liberado.' });
+  } catch (error) {
+    console.error('Error al cancelar inscripción:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
 
 module.exports = {
   listarActividades,
   crearActividad,
   inscribirse,
-  misInscripciones
+  misInscripciones,
+  cancelarInscripcion
 };

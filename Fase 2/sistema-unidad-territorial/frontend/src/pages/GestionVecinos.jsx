@@ -5,7 +5,7 @@ import { getVecinos, cambiarEstadoUsuario } from '../services/api';
 function GestionVecinos() {
   const [vecinos, setVecinos] = useState([]);
   const [filtro, setFiltro] = useState('pendiente');
-  const [cargando, setCargando] = useState(false);
+  const [cargando, setCargando] = useState(true);
   const [mensaje, setMensaje] = useState('');
 
   const cargarVecinos = useCallback(async () => {
@@ -60,25 +60,38 @@ function GestionVecinos() {
     }
   };
 
+  // Función para mostrar el tiempo de residencia de forma legible
+  const formatearTiempo = (tiempo) => {
+    if (!tiempo) return 'No especificado';
+    const tiempos = {
+      'menos_1_ano': 'Menos de 1 año',
+      '1_5_anos': 'De 1 a 5 años',
+      '5_10_anos': 'De 5 a 10 años',
+      'mas_10_anos': 'Más de 10 años'
+    };
+    return tiempos[tiempo] || tiempo.replace(/_/g, ' ');
+  };
+
   return (
     <div className="panel">
       <header className="panel-header">
         <div>
           <h1>Gestión de Vecinos</h1>
-          <p className="panel-subtitle">Aprueba, rechaza o gestiona las inscripciones</p>
+          <p className="panel-subtitle">Aprueba, rechaza o gestiona las inscripciones a la junta</p>
         </div>
       </header>
 
       {mensaje && <div className="alert alert-success" role="status">{mensaje}</div>}
 
       <div className="filtros">
-        {['pendiente', 'activo', 'rechazado', 'todos'].map((f) => (
+        {['pendiente', 'activo', 'rechazado', 'baja', 'todos'].map((f) => (
           <button
             key={f}
             className={filtro === f ? 'btn-filtro active' : 'btn-filtro'}
             onClick={() => setFiltro(f)}
+            style={{ textTransform: 'capitalize' }}
           >
-            {f.charAt(0).toUpperCase() + f.slice(1)}
+            {f}
           </button>
         ))}
       </div>
@@ -93,7 +106,7 @@ function GestionVecinos() {
             <thead>
               <tr>
                 <th>RUT</th>
-                <th>Nombre</th>
+                <th>Nombre y Residencia</th>
                 <th>Correo</th>
                 <th>Teléfono</th>
                 <th>Estado</th>
@@ -104,7 +117,12 @@ function GestionVecinos() {
               {vecinos.map((v) => (
                 <tr key={v.id}>
                   <td>{v.rut}</td>
-                  <td>{v.nombres} {v.apellidos}</td>
+                  <td>
+                    <strong>{v.nombres} {v.apellidos}</strong><br/>
+                    <small style={{ color: '#6b7280', textTransform: 'capitalize' }}>
+                      {v.tipo_residente || 'Dueño'} · {formatearTiempo(v.tiempo_residencia)}
+                    </small>
+                  </td>
                   <td>{v.correo}</td>
                   <td>{v.telefono || '—'}</td>
                   <td><span className={getBadgeClass(v.estado)}>{v.estado}</span></td>
@@ -118,10 +136,7 @@ function GestionVecinos() {
                     {v.estado === 'activo' && (
                       <button className="btn-accion btn-rechazar" onClick={() => handleCambiarEstado(v.id, 'baja')}>Dar de baja</button>
                     )}
-                    {v.estado === 'rechazado' && (
-                      <button className="btn-accion btn-aprobar" onClick={() => handleCambiarEstado(v.id, 'activo')}>✓ Activar</button>
-                    )}
-                    {v.estado === 'baja' && (
+                    {(v.estado === 'rechazado' || v.estado === 'baja') && (
                       <button className="btn-accion btn-aprobar" onClick={() => handleCambiarEstado(v.id, 'activo')}>✓ Reactivar</button>
                     )}
                   </td>
