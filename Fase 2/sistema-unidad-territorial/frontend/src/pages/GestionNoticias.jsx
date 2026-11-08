@@ -4,40 +4,27 @@ import { getNoticias, crearNoticia, eliminarNoticia } from '../services/api';
 
 function GestionNoticias() {
   const [noticias, setNoticias] = useState([]);
-  // Quitamos 'imagen_url' del estado y agregamos 'imagen' (el archivo)
   const [form, setForm] = useState({ titulo: '', contenido: '' });
   const [imagen, setImagen] = useState(null); 
-  
   const [error, setError] = useState('');
   const [exito, setExito] = useState('');
 
-  const cargar = () => {
-    getNoticias().then(res => setNoticias(res.data));
-  };
-
+  const cargar = () => { getNoticias().then(res => setNoticias(res.data)); };
   useEffect(() => { cargar(); }, []);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(''); setExito('');
-    
+    e.preventDefault(); setError(''); setExito('');
     try {
-      // Creamos el FormData para empaquetar los textos y el archivo
       const formData = new FormData();
       formData.append('titulo', form.titulo);
       formData.append('contenido', form.contenido);
-      if (imagen) {
-        formData.append('imagen', imagen);
-      }
+      if (imagen) formData.append('imagen', imagen);
 
       await crearNoticia(formData);
       setExito('Noticia publicada exitosamente');
       setForm({ titulo: '', contenido: '' });
-      setImagen(null); // Limpiamos el archivo
-      
-      // Limpiar el input file visualmente
+      setImagen(null); 
       document.getElementById('input-imagen').value = '';
-      
       cargar();
     } catch (err) {
       setError(err.response?.data?.error || 'Error al crear la noticia');
@@ -69,22 +56,16 @@ function GestionNoticias() {
         <h2>Publicar Nueva Noticia</h2>
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label>Título de la noticia *</label>
-            <input required value={form.titulo} onChange={e => setForm({...form, titulo: e.target.value})} placeholder="Ej: Nueva directiva electa" />
+            <label htmlFor="not-titulo">Título de la noticia *</label>
+            <input id="not-titulo" required value={form.titulo} onChange={e => setForm({...form, titulo: e.target.value})} placeholder="Ej: Nueva directiva electa" />
           </div>
           <div className="form-group">
-            <label>Contenido *</label>
-            <textarea required rows="4" value={form.contenido} onChange={e => setForm({...form, contenido: e.target.value})} placeholder="Escribe los detalles aquí..."></textarea>
+            <label htmlFor="not-contenido">Contenido *</label>
+            <textarea id="not-contenido" required rows="4" value={form.contenido} onChange={e => setForm({...form, contenido: e.target.value})} placeholder="Escribe los detalles aquí..."></textarea>
           </div>
           <div className="form-group">
-            <label>Imagen de la noticia (Opcional)</label>
-            <input 
-              id="input-imagen"
-              type="file" 
-              accept="image/*" 
-              onChange={e => setImagen(e.target.files[0])} 
-              style={{ padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '8px' }}
-            />
+            <label htmlFor="input-imagen">Imagen de la noticia (Opcional)</label>
+            <input id="input-imagen" type="file" accept="image/*" onChange={e => setImagen(e.target.files[0])} style={{ padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '8px' }} />
             <small style={{ color: '#6b7280', marginTop: '0.2rem' }}>Sube un archivo JPG o PNG.</small>
           </div>
           <button type="submit" className="btn-primary">Publicar Noticia</button>
@@ -95,12 +76,7 @@ function GestionNoticias() {
       <div className="tabla-container">
         <table className="tabla">
           <thead>
-            <tr>
-              <th>Título</th>
-              <th>Autor</th>
-              <th>Fecha</th>
-              <th>Acciones</th>
-            </tr>
+            <tr><th>Título</th><th>Autor</th><th>Fecha</th><th>Acciones</th></tr>
           </thead>
           <tbody>
             {noticias.map(n => (
@@ -109,9 +85,7 @@ function GestionNoticias() {
                 <td>{n.autor_nombres} {n.autor_apellidos}</td>
                 <td>{new Date(n.fecha_publicacion).toLocaleDateString('es-CL')}</td>
                 <td>
-                  <button className="btn-accion btn-rechazar" onClick={() => handleEliminar(n.id)}>
-                    Eliminar
-                  </button>
+                  <button className="btn-accion btn-rechazar" onClick={() => handleEliminar(n.id)}>Eliminar</button>
                 </td>
               </tr>
             ))}
@@ -121,5 +95,4 @@ function GestionNoticias() {
     </div>
   );
 }
-
 export default GestionNoticias;

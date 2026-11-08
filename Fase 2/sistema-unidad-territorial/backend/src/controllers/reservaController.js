@@ -5,11 +5,14 @@ const pool = require('../config/db');
 // ============================================
 const listarEspacios = async (req, res) => {
   try {
-    const result = await pool.query(`SELECT id, nombre, tipo, descripcion, activo FROM espacio WHERE activo = true ORDER BY nombre ASC`);
+    const result = await pool.query(
+      `SELECT id, nombre, tipo, descripcion, activo 
+       FROM espacio WHERE activo = true ORDER BY nombre ASC`
+    );
     res.json(result.rows);
   } catch (error) {
-    console.error('ERROR REAL EN POSTGRES:', error); // Esto saldrá en la consola del backend
-    res.status(500).json({ error: 'Error interno del servidor', detalle: error.message });
+    console.error('Error al listar espacios:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
@@ -19,14 +22,14 @@ const listarEspacios = async (req, res) => {
 const obtenerCalendario = async (req, res) => {
   const { espacio_id, fecha_inicio } = req.query; // fecha_inicio: YYYY-MM-DD
   try {
-    // Buscamos reservas aprobadas o pendientes para ese espacio en esa semana
     const result = await pool.query(
-      `SELECT id, inicio, fin, estado, usuario_id 
-       FROM reserva 
-       WHERE espacio_id = $1 
-       AND estado IN ('pendiente', 'aprobada')
-       AND inicio >= $2::date
-       AND inicio < ($2::date + interval '7 days')`,
+      `SELECT r.id, r.inicio, r.fin, r.estado, r.usuario_id, r.motivo, u.nombres AS vecino_nombre
+       FROM reserva r
+       JOIN usuario u ON u.id = r.usuario_id
+       WHERE r.espacio_id = $1 
+       AND r.estado IN ('pendiente', 'aprobada')
+       AND r.inicio >= $2::date
+       AND r.inicio < ($2::date + interval '7 days')`,
       [espacio_id, fecha_inicio]
     );
     res.json(result.rows);
@@ -47,7 +50,6 @@ const solicitar = async (req, res) => {
     return res.status(400).json({ error: 'Faltan datos obligatorios' });
   }
 
-  // Armamos los timestamps completos
   const inicio = `${fecha} ${hora_inicio}:00`;
   const fin = `${fecha} ${hora_fin}:00`;
 
@@ -56,7 +58,6 @@ const solicitar = async (req, res) => {
   }
 
   try {
-    // Validar cruce de horarios (RF-20)
     const cruce = await pool.query(
       `SELECT id FROM reserva 
        WHERE espacio_id = $1 
@@ -146,7 +147,7 @@ const listarTodas = async (req, res) => {
 // ============================================
 const cambiarEstado = async (req, res) => {
   const { id } = req.params;
-  const { estado } = req.body; // 'aprobada' o 'rechazada'
+  const { estado } = req.body;
   const directorId = req.usuario.id;
 
   if (!['aprobada', 'rechazada'].includes(estado)) {

@@ -12,8 +12,7 @@ function GestionActividades() {
   useEffect(() => { cargar(); }, []);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(''); setExito('');
+    e.preventDefault(); setError(''); setExito('');
     try {
       await crearActividad(form);
       setExito('Actividad creada exitosamente');
@@ -27,6 +26,7 @@ function GestionActividades() {
   return (
     <div className="panel">
       <header className="panel-header">
+        <Link to="/panel-directorio" className="btn-volver">← Volver al panel</Link>
         <h1>Gestión de Actividades</h1>
       </header>
 
@@ -38,27 +38,27 @@ function GestionActividades() {
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-row">
             <div className="form-group">
-              <label>Título de la actividad *</label>
-              <input required value={form.titulo} onChange={e => setForm({...form, titulo: e.target.value})} placeholder="Ej: Taller de Tejido" />
+              <label htmlFor="act-titulo">Título de la actividad *</label>
+              <input id="act-titulo" required value={form.titulo} onChange={e => setForm({...form, titulo: e.target.value})} placeholder="Ej: Taller de Tejido" />
             </div>
             <div className="form-group">
-              <label>Lugar *</label>
-              <input required value={form.lugar} onChange={e => setForm({...form, lugar: e.target.value})} placeholder="Ej: Sede Social" />
+              <label htmlFor="act-lugar">Lugar *</label>
+              <input id="act-lugar" required value={form.lugar} onChange={e => setForm({...form, lugar: e.target.value})} placeholder="Ej: Sede Social" />
             </div>
           </div>
           <div className="form-row">
             <div className="form-group">
-              <label>Fecha y Hora *</label>
-              <input type="datetime-local" required value={form.fecha_hora} onChange={e => setForm({...form, fecha_hora: e.target.value})} />
+              <label htmlFor="act-fecha">Fecha y Hora *</label>
+              <input id="act-fecha" type="datetime-local" required value={form.fecha_hora} onChange={e => setForm({...form, fecha_hora: e.target.value})} />
             </div>
             <div className="form-group">
-              <label>Cupo Máximo *</label>
-              <input type="number" required min="1" value={form.cupo_maximo} onChange={e => setForm({...form, cupo_maximo: parseInt(e.target.value)})} />
+              <label htmlFor="act-cupo">Cupo Máximo *</label>
+              <input id="act-cupo" type="number" required min="1" value={form.cupo_maximo} onChange={e => setForm({...form, cupo_maximo: parseInt(e.target.value)})} />
             </div>
           </div>
           <div className="form-group">
-            <label>Descripción</label>
-            <textarea rows="3" value={form.descripcion} onChange={e => setForm({...form, descripcion: e.target.value})}></textarea>
+            <label htmlFor="act-desc">Descripción</label>
+            <textarea id="act-desc" rows="3" value={form.descripcion} onChange={e => setForm({...form, descripcion: e.target.value})}></textarea>
           </div>
           <button type="submit" className="btn-primary">Crear Actividad</button>
         </form>
@@ -68,12 +68,7 @@ function GestionActividades() {
       <div className="tabla-container">
         <table className="tabla">
           <thead>
-            <tr>
-              <th>Título</th>
-              <th>Fecha</th>
-              <th>Lugar</th>
-              <th>Cupos (Inscritos/Máx)</th>
-            </tr>
+            <tr><th>Título</th><th>Fecha</th><th>Lugar</th><th>Cupos (Inscritos/Máx)</th></tr>
           </thead>
           <tbody>
             {actividades.map(act => (
@@ -90,5 +85,4 @@ function GestionActividades() {
     </div>
   );
 }
-
 export default GestionActividades;

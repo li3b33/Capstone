@@ -446,3 +446,25 @@ a { text-decoration: none; color: #2563eb; }
 .auth-card-wide {
   max-width: 750px; 
 }
+
+/* ==========================================
+   ESTILOS DE RESERVA EN EL CALENDARIO
+   ========================================== */
+
+/* Estilos para la reserva propia (color verde) */
+.calendario-celda-bloque.mi-reserva {
+  background: #d1fae5; /* Verde claro */
+  color: #065f46; /* Texto verde oscuro */
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.7rem;
+}
+
+/* Ajuste visual del texto "Ocupado" (rojo) */
+.calendario-celda-bloque.ocupado {
+  background: #fee2e2;
+  cursor: not-allowed;
+  color: #991b1b;
+  font-weight: bold;
+  font-size: 0.7rem;
+}
