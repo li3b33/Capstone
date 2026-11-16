@@ -66,12 +66,12 @@ const misProyectos = async (req, res) => {
 const listarTodos = async (req, res) => {
   const { estado } = req.query;
   try {
-    let query = `
-      SELECT p.id, p.titulo, p.descripcion, p.presupuesto_estimado, p.estado, p.fecha_postulacion,
-             u.rut, u.nombres, u.apellidos, u.correo
-      FROM proyecto p
-      JOIN usuario u ON u.id = p.usuario_id
-    `;
+      let query = `
+        SELECT p.id, p.titulo, p.descripcion, p.presupuesto_estimado, p.estado, p.fecha_postulacion,
+              u.rut, u.nombres, u.apellidos, u.correo
+        FROM proyecto p
+        JOIN usuario u ON u.id = p.usuario_id
+      `;
     const params = [];
     if (estado) {
       query += ` WHERE p.estado = $1`;

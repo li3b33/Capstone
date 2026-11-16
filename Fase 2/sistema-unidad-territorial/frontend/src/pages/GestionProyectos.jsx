@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { getTodosProyectos, revisarProyecto, aprobarProyecto, rechazarProyecto } from '../services/api';
+import WhatsAppButton from '../components/WhatsAppButton'; // <-- NUEVO
 
 function GestionProyectos() {
   const [proyectos, setProyectos] = useState([]);
@@ -143,15 +144,29 @@ function GestionProyectos() {
             <h3 style={{ color: '#1e3a8a', marginTop: '1.5rem', marginBottom: '0.5rem' }}>Descripción de la idea:</h3>
             <div className="modal-descripcion">{proyectoSeleccionado.descripcion}</div>
 
-            {(proyectoSeleccionado.estado === 'recibido' || proyectoSeleccionado.estado === 'en_revision') && (
-              <div className="modal-acciones">
-                {proyectoSeleccionado.estado === 'recibido' && (
-                  <button className="btn-accion btn-revisar" style={{ flex: 1, padding: '0.75rem' }} onClick={() => handleRevisar(proyectoSeleccionado.id)}>🔍 Revisar</button>
+            {/* Acciones dentro del modal */}
+            <div className="modal-acciones" style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                {(proyectoSeleccionado.estado === 'recibido' || proyectoSeleccionado.estado === 'en_revision') && (
+                  <>
+                    {proyectoSeleccionado.estado === 'recibido' && (
+                      <button className="btn-accion btn-revisar" onClick={() => handleRevisar(proyectoSeleccionado.id)}>🔍 Revisar</button>
+                    )}
+                    <button className="btn-accion btn-aprobar" onClick={() => handleAprobar(proyectoSeleccionado.id)}>✓ Aprobar</button>
+                    <button className="btn-accion btn-rechazar" onClick={() => handleRechazar(proyectoSeleccionado.id)}>✗ Rechazar</button>
+                  </>
                 )}
-                <button className="btn-accion btn-aprobar" style={{ flex: 1, padding: '0.75rem' }} onClick={() => handleAprobar(proyectoSeleccionado.id)}>✓ Aprobar</button>
-                <button className="btn-accion btn-rechazar" style={{ flex: 1, padding: '0.75rem' }} onClick={() => handleRechazar(proyectoSeleccionado.id)}>✗ Rechazar</button>
               </div>
-            )}
+              
+              <div>
+                {/* Botón de WhatsApp para notificar */}
+                <WhatsAppButton 
+                  telefono={proyectoSeleccionado.telefono} 
+                  mensaje={`Hola ${proyectoSeleccionado.nombres}, te contactamos de la Junta de Vecinos por tu proyecto "${proyectoSeleccionado.titulo}".`} 
+                />
+              </div>
+            </div>
+
           </div>
         </div>
       )}

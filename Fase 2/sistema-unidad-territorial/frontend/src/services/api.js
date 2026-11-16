@@ -17,6 +17,7 @@ api.interceptors.request.use((config) => {
 export const login = (correo, password) => api.post('/auth/login', { correo, password });
 export const registrar = (datos) => api.post('/auth/registro', datos);
 export const getPerfil = () => api.get('/auth/perfil');
+export const actualizarPerfil = (datos) => api.put('/auth/perfil', datos); // <-- NUEVA
 
 // Funciones de usuarios (directorio)
 export const getPendientes = () => api.get('/usuarios/pendientes');
@@ -28,44 +29,34 @@ export const cambiarEstadoUsuario = (id, estado, motivo) =>
 // Funciones de certificados (vecino)
 export const solicitarCertificado = () => api.post('/certificados');
 export const getMisCertificados = () => api.get('/certificados/mis-certificados');
-export const verificarCertificado = (folio) =>
-  api.get(`/certificados/verificar/${folio}`);
+export const verificarCertificado = (folio) => api.get(`/certificados/verificar/${folio}`);
 
 // Funciones de certificados (directorio)
 export const getCertificadosPendientes = () => api.get('/certificados/pendientes');
-export const getTodosCertificados = (estado) =>
-  api.get('/certificados/todos', { params: { estado } });
+export const getTodosCertificados = (estado) => api.get('/certificados/todos', { params: { estado } });
 export const aprobarCertificado = (id) => api.put(`/certificados/${id}/aprobar`);
-export const rechazarCertificado = (id, motivo) =>
-  api.put(`/certificados/${id}/rechazar`, { motivo });
-export const descargarCertificadoPDF = (id) =>
-  api.get(`/certificados/${id}/pdf`, { responseType: 'blob' });
+export const rechazarCertificado = (id, motivo) => api.put(`/certificados/${id}/rechazar`, { motivo });
+export const descargarCertificadoPDF = (id) => api.get(`/certificados/${id}/pdf`, { responseType: 'blob' });
 
 // Funciones de proyectos (vecino)
 export const postularProyecto = (datos) => api.post('/proyectos', datos);
 export const getMisProyectos = () => api.get('/proyectos/mis-proyectos');
 
 // Funciones de proyectos (directorio)
-export const getTodosProyectos = (estado) =>
-  api.get('/proyectos/todos', { params: { estado } });
+export const getTodosProyectos = (estado) => api.get('/proyectos/todos', { params: { estado } });
 export const revisarProyecto = (id) => api.put(`/proyectos/${id}/revisar`);
-export const aprobarProyecto = (id, presupuesto_estimado) => 
-  api.put(`/proyectos/${id}/aprobar`, { presupuesto_estimado });
-export const rechazarProyecto = (id, motivo) =>
-  api.put(`/proyectos/${id}/rechazar`, { motivo });
+export const aprobarProyecto = (id, presupuesto_estimado) => api.put(`/proyectos/${id}/aprobar`, { presupuesto_estimado });
+export const rechazarProyecto = (id, motivo) => api.put(`/proyectos/${id}/rechazar`, { motivo });
 
 // Funciones de reservas (vecino)
 export const getEspacios = () => api.get('/reservas/espacios');
-export const getCalendarioReservas = (espacio_id, fecha_inicio) => 
-  api.get('/reservas/calendario', { params: { espacio_id, fecha_inicio } });
+export const getCalendarioReservas = (espacio_id, fecha_inicio) => api.get('/reservas/calendario', { params: { espacio_id, fecha_inicio } });
 export const solicitarReserva = (datos) => api.post('/reservas', datos);
 export const getMisReservas = () => api.get('/reservas/mis-reservas');
 
 // Funciones de reservas (directorio)
-export const getTodasReservas = (estado) => 
-  api.get('/reservas/todas', { params: { estado } });
-export const cambiarEstadoReserva = (id, estado) => 
-  api.put(`/reservas/${id}/estado`, { estado });
+export const getTodasReservas = (estado) => api.get('/reservas/todas', { params: { estado } });
+export const cambiarEstadoReserva = (id, estado) => api.put(`/reservas/${id}/estado`, { estado });
 
 // Funciones de actividades
 export const getActividades = () => api.get('/actividades');
@@ -77,10 +68,8 @@ export const getMisInscripciones = () => api.get('/actividades/mis-inscripciones
 // Funciones de noticias
 export const getNoticias = () => api.get('/noticias');
 export const crearNoticia = (formData) => api.post('/noticias', formData, {
-  headers: { 'Content-Type': 'multipart/form-data',
-  },
+  headers: { 'Content-Type': 'multipart/form-data' },
 });
 export const eliminarNoticia = (id) => api.delete(`/noticias/${id}`);
-
 
 export default api;

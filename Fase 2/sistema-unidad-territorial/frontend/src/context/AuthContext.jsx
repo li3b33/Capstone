@@ -3,7 +3,6 @@ import api from '../services/api';
 
 const AuthContext = createContext();
 
-// Leer el usuario del localStorage UNA VEZ al inicio
 function getUsuarioInicial() {
   try {
     const token = localStorage.getItem('token');
@@ -39,8 +38,14 @@ export function AuthProvider({ children }) {
     setUsuario(null);
   };
 
+  // Nueva función para actualizar el perfil en el contexto
+  const actualizarPerfilGlobal = (nuevoUsuario) => {
+    localStorage.setItem('usuario', JSON.stringify(nuevoUsuario));
+    setUsuario(nuevoUsuario);
+  };
+
   return (
-    <AuthContext.Provider value={{ usuario, login, registrar, logout }}>
+    <AuthContext.Provider value={{ usuario, login, registrar, logout, actualizarPerfilGlobal }}>
       {children}
     </AuthContext.Provider>
   );

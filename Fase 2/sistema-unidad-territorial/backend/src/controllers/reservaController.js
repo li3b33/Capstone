@@ -122,8 +122,8 @@ const listarTodas = async (req, res) => {
   try {
     let query = `
       SELECT r.id, r.inicio, r.fin, r.motivo, r.estado,
-             e.nombre AS espacio_nombre,
-             u.nombres, u.apellidos, u.rut, u.correo
+            e.nombre AS espacio_nombre,
+            u.nombres, u.apellidos, u.rut, u.correo, u.telefono /* <-- AGREGADO */
       FROM reserva r
       JOIN espacio e ON e.id = r.espacio_id
       JOIN usuario u ON u.id = r.usuario_id

@@ -7,23 +7,15 @@ const jwt = require('jsonwebtoken');
 // ============================================
 const registrar = async (req, res) => {
   const {
-    rut,
-    nombres,
-    apellidos,
-    fecha_nacimiento,
-    direccion,
-    correo,
-    telefono,
-    password,
+    rut, nombres, apellidos, fecha_nacimiento, direccion,
+    correo, telefono, password, tipo_residente, tiempo_residencia
   } = req.body;
 
   try {
-    // Validar campos obligatorios
     if (!rut || !nombres || !apellidos || !fecha_nacimiento || !direccion || !correo || !password) {
       return res.status(400).json({ error: 'Faltan campos obligatorios' });
     }
 
-    // Validar mayoría de edad (14 años)
     const fechaNac = new Date(fecha_nacimiento);
     const hoy = new Date();
     const edad = Math.floor((hoy - fechaNac) / (365.25 * 24 * 60 * 60 * 1000));
@@ -31,34 +23,24 @@ const registrar = async (req, res) => {
       return res.status(400).json({ error: 'Debes tener al menos 14 años para inscribirte' });
     }
 
-    // Verificar que el correo no exista
-    const existeCorreo = await pool.query(
-      'SELECT id FROM usuario WHERE correo = $1',
-      [correo]
-    );
+    const existeCorreo = await pool.query('SELECT id FROM usuario WHERE correo = $1', [correo]);
     if (existeCorreo.rows.length > 0) {
       return res.status(409).json({ error: 'El correo ya está registrado' });
     }
 
-    // Verificar que el RUT no exista
-    const existeRut = await pool.query(
-      'SELECT id FROM usuario WHERE rut = $1',
-      [rut]
-    );
+    const existeRut = await pool.query('SELECT id FROM usuario WHERE rut = $1', [rut]);
     if (existeRut.rows.length > 0) {
       return res.status(409).json({ error: 'El RUT ya está registrado' });
     }
 
-    // Encriptar contraseña
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Insertar usuario (junta_id = 1 por ahora)
     const result = await pool.query(
       `INSERT INTO usuario 
         (junta_id, rut, nombres, apellidos, fecha_nacimiento, direccion, correo, telefono, password_hash, rol, estado, tipo_residente, tiempo_residencia)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'vecino', 'pendiente', $10, $11)
        RETURNING id, rut, nombres, apellidos, correo, rol, estado`,
-      [1, rut, nombres, apellidos, fecha_nacimiento, direccion, correo, telefono || null, passwordHash, req.body.tipo_residente, req.body.tiempo_residencia]
+      [1, rut, nombres, apellidos, fecha_nacimiento, direccion, correo, telefono || null, passwordHash, tipo_residente, tiempo_residencia]
     );
 
     res.status(201).json({
@@ -82,25 +64,19 @@ const login = async (req, res) => {
       return res.status(400).json({ error: 'Correo y contraseña son obligatorios' });
     }
 
-    // Buscar usuario
-    const result = await pool.query(
-      'SELECT * FROM usuario WHERE correo = $1',
-      [correo]
-    );
+    const result = await pool.query('SELECT * FROM usuario WHERE correo = $1', [correo]);
 
     if (result.rows.length === 0) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
     const usuario = result.rows[0];
-
-    // Verificar contraseña
     const passwordValida = await bcrypt.compare(password, usuario.password_hash);
+    
     if (!passwordValida) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
-    // Verificar estado
     if (usuario.estado === 'pendiente') {
       return res.status(403).json({ error: 'Tu cuenta aún no ha sido aprobada por el directorio' });
     }
@@ -111,7 +87,6 @@ const login = async (req, res) => {
       return res.status(403).json({ error: 'Tu cuenta está dada de baja' });
     }
 
-    // Generar token JWT
     const token = jwt.sign(
       { id: usuario.id, correo: usuario.correo, rol: usuario.rol },
       process.env.JWT_SECRET,
@@ -127,9 +102,12 @@ const login = async (req, res) => {
         nombres: usuario.nombres,
         apellidos: usuario.apellidos,
         correo: usuario.correo,
+        telefono: usuario.telefono, // <-- Aseguramos que viaje el teléfono
         direccion: usuario.direccion,
         rol: usuario.rol,
         estado: usuario.estado,
+        tipo_residente: usuario.tipo_residente,
+        tiempo_residencia: usuario.tiempo_residencia
       },
     });
   } catch (error) {
@@ -139,7 +117,7 @@ const login = async (req, res) => {
 };
 
 // ============================================
-// OBTENER PERFIL (requiere token)
+// OBTENER PERFIL
 // ============================================
 const perfil = async (req, res) => {
   try {
@@ -157,4 +135,45 @@ const perfil = async (req, res) => {
   }
 };
 
-module.exports = { registrar, login, perfil };
+// ============================================
+// ACTUALIZAR PERFIL (Correo y Teléfono)
+// ============================================
+const actualizarPerfil = async (req, res) => {
+  const usuarioId = req.usuario.id;
+  const { correo, telefono } = req.body;
+
+  if (!correo) {
+    return res.status(400).json({ error: 'El correo electrónico es obligatorio' });
+  }
+
+  try {
+    // Verificar que el nuevo correo no esté en uso por otro usuario
+    const existeCorreo = await pool.query(
+      'SELECT id FROM usuario WHERE correo = $1 AND id != $2',
+      [correo, usuarioId]
+    );
+
+    if (existeCorreo.rows.length > 0) {
+      return res.status(409).json({ error: 'Este correo ya está registrado por otro vecino.' });
+    }
+
+    // Actualizar los datos
+    const result = await pool.query(
+      `UPDATE usuario 
+       SET correo = $1, telefono = $2 
+       WHERE id = $3 
+       RETURNING id, rut, nombres, apellidos, correo, telefono, direccion, rol, estado, tipo_residente, tiempo_residencia`,
+      [correo, telefono || null, usuarioId]
+    );
+
+    res.json({
+      mensaje: 'Perfil actualizado correctamente',
+      usuario: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error al actualizar perfil:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
+module.exports = { registrar, login, perfil, actualizarPerfil };
