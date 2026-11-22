@@ -114,8 +114,8 @@ const listarTodos = async (req, res) => {
   try {
     let query = `
       SELECT sc.id, sc.estado, sc.folio, sc.fecha_solicitud, sc.fecha_emision,
-             sc.direccion_certificada,
-             u.rut, u.nombres, u.apellidos, u.correo
+            sc.direccion_certificada,
+            u.rut, u.nombres, u.apellidos, u.correo, u.telefono  /* <-- AGREGADO */
       FROM solicitud_certificado sc
       JOIN usuario u ON u.id = sc.usuario_id
     `;

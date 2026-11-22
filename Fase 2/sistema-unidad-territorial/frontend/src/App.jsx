@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import Layout from './components/Layout'; // <-- Importamos el Layout
+import Layout from './components/Layout';
 
 // Páginas
 import Home from './pages/Home';
@@ -22,17 +22,16 @@ import Actividades from './pages/Actividades';
 import MisInscripciones from './pages/MisInscripciones';
 import GestionActividades from './pages/GestionActividades';
 import GestionNoticias from './pages/GestionNoticias';
+import MiPerfil from './pages/MiPerfil'; // <-- NUEVO
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* === RUTAS PÚBLICAS (Sin Sidebar) === */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* === RUTAS CON LAYOUT (Con Sidebar si hay sesión) === */}
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/panel-vecino" element={<PanelVecino />} />
@@ -51,6 +50,7 @@ function App() {
             <Route path="/mis-inscripciones" element={<MisInscripciones />} />
             <Route path="/gestion-actividades" element={<GestionActividades />} />
             <Route path="/gestion-noticias" element={<GestionNoticias />} />
+            <Route path="/mi-perfil" element={<MiPerfil />} />
           </Route>
         </Routes>
       </BrowserRouter>

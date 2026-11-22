@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { getTodasReservas, cambiarEstadoReserva } from '../services/api';
+import WhatsAppButton from '../components/WhatsAppButton'; // <-- NUEVO
 
 function GestionReservas() {
   const [reservas, setReservas] = useState([]);
@@ -12,14 +13,19 @@ function GestionReservas() {
     try {
       const res = await getTodasReservas(filtro === 'todos' ? null : filtro);
       setReservas(res.data);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error("Error al cargar reservas:", err);
     }
   }, [filtro]);
 
   useEffect(() => {
-    setCargando(true);
-    cargar().finally(() => setCargando(false));
+    let activo = true;
+    const cargarConEstado = async () => {
+      setCargando(true);
+      try { await cargar(); } finally { if (activo) setCargando(false); }
+    };
+    cargarConEstado();
+    return () => { activo = false; };
   }, [cargar]);
 
   const handleCambiarEstado = async (id, estado) => {
@@ -39,6 +45,7 @@ function GestionReservas() {
   return (
     <div className="panel">
       <header className="panel-header">
+        <Link to="/panel-directorio" className="btn-volver">← Volver al panel</Link>
         <h1>Gestión de Reservas</h1>
         <p className="panel-subtitle">Aprueba o rechaza las solicitudes de espacios comunitarios</p>
       </header>
@@ -79,6 +86,12 @@ function GestionReservas() {
                         <button className="btn-accion btn-rechazar" onClick={() => handleCambiarEstado(r.id, 'rechazada')}>✗ Rechazar</button>
                       </>
                     )}
+                    {(r.estado === 'aprobada' || r.estado === 'rechazada') && (
+                      <WhatsAppButton 
+                        telefono={r.telefono} 
+                        mensaje={`Hola ${r.nombres}, tu reserva para "${r.espacio_nombre}" ha sido ${r.estado.toUpperCase()}.`} 
+                      />
+                    )}
                   </td>
                 </tr>
               ))}
@@ -89,4 +102,5 @@ function GestionReservas() {
     </div>
   );
 }
+
 export default GestionReservas;

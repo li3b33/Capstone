@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import WhatsAppButton from '../components/WhatsAppButton';
 import {
   getCertificadosPendientes,
   getTodosCertificados,
@@ -161,19 +162,23 @@ function GestionCertificados() {
                         <button className="btn-accion btn-rechazar" onClick={() => handleRechazar(c.id)}>✗ Rechazar</button>
                       </>
                     )}
+                    
                     {c.estado === 'aprobado' && (
                       <>
-                        <span className="texto-info">✓ Emitido</span>
-                        <button
-                          className="btn-accion btn-aprobar"
-                          onClick={() => handleDescargar(c.id, c.folio)}
-                        >
-                          📄 Descargar
-                        </button>
+                        <WhatsAppButton 
+                          telefono={c.telefono} 
+                          mensaje={`Hola ${c.nombres}, tu certificado de residencia ha sido APROBADO. Tu folio es ${c.folio}. Puedes descargarlo en el sistema.`} 
+                        />
                       </>
                     )}
+
                     {c.estado === 'rechazado' && (
-                      <span className="texto-error">✗ Rechazado</span>
+                      <>
+                        <WhatsAppButton 
+                          telefono={c.telefono} 
+                          mensaje={`Hola ${c.nombres}, tu solicitud de certificado ha sido RECHAZADA. Por favor, contacta al directorio para más detalles.`} 
+                        />
+                      </>
                     )}
                   </td>
                 </tr>

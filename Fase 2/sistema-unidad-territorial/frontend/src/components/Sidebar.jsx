@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
   Home, FileText, FolderKanban, CalendarDays, 
-  Megaphone, LogOut, LayoutDashboard, Users, ShieldCheck
+  Megaphone, LogOut, LayoutDashboard, Users, ShieldCheck, User
 } from 'lucide-react';
 
 function Sidebar() {
@@ -20,7 +20,6 @@ function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        {/* Asumiendo que el logo está en public/favicon.svg */}
         <img src="/favicon.svg" alt="Logo" />
         <span>Unidad Territorial</span>
       </div>
@@ -68,6 +67,13 @@ function Sidebar() {
               <Megaphone size={18} /> Noticias
             </Link>
           </>
+        )}
+
+        {/* ENLACE A MI PERFIL PARA TODOS */}
+        {usuario && (
+          <Link to="/mi-perfil" className={isActive('/mi-perfil')}>
+            <User size={18} /> Mi Perfil
+          </Link>
         )}
       </nav>
 

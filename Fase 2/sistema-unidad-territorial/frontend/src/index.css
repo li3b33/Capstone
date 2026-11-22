@@ -1,4 +1,14 @@
-/* --- CONFIGURACIÓN BASE --- */
+:root {
+  --primary: #16A34A;       /* Verde bosque (para botones) */
+  --primary-hover: #15803D; /* Verde más oscuro */
+  --bg-body: #E8F5E9;       /* Fondo general VERDE muy suave */
+  --bg-surface: #FDFBF7;    /* Tarjetas color CREMA */
+  --sidebar-bg: #C8E6C9;    /* Sidebar VERDE pastel */
+  --text-main: #1F2937;     /* Texto oscuro */
+  --text-muted: #4B5563;    /* Texto secundario */
+  --border: #A5D6A7;        /* Bordes verdes suaves */
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -10,11 +20,11 @@ html, body, #root {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  background-color: #f8fafc;
-  color: #1f2937;
+  background-color: var(--bg-body);
+  color: var(--text-main);
 }
 
-a { text-decoration: none; color: #2563eb; }
+a { text-decoration: none; color: var(--primary); }
 
 /* --- ESTRUCTURA LAYOUT (SIDEBAR) --- */
 .app-layout {
@@ -31,13 +41,13 @@ a { text-decoration: none; color: #2563eb; }
   height: 100vh;
   overflow-y: auto;
   padding: 2rem 3rem;
-  background-color: #f8fafc;
+  background-color: var(--bg-body);
 }
 
 /* --- SIDEBAR --- */
 .sidebar {
-  background: white;
-  border-right: 1px solid #e2e8f0;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -48,11 +58,11 @@ a { text-decoration: none; color: #2563eb; }
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border);
 }
 
 .sidebar-header img { width: 32px; height: 32px; object-fit: contain; }
-.sidebar-header span { font-size: 1.1rem; font-weight: 700; color: #1e3a8a; }
+.sidebar-header span { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
 
 .sidebar-nav {
   padding: 1rem;
@@ -68,18 +78,18 @@ a { text-decoration: none; color: #2563eb; }
   gap: 0.75rem;
   padding: 0.6rem 1rem;
   border-radius: 6px;
-  color: #64748b;
+  color: #4A5568;
   font-weight: 500;
   font-size: 0.9rem;
   transition: all 0.2s;
 }
 
-.sidebar-link:hover { background: #f1f5f9; color: #0f172a; }
-.sidebar-link.active { background: #eff6ff; color: #2563eb; font-weight: 600; }
+.sidebar-link:hover { background: #E4E0D7; color: var(--primary); }
+.sidebar-link.active { background: #D6DED8; color: var(--primary); font-weight: 700; }
 
-.sidebar-footer { padding: 1rem; border-top: 1px solid #e2e8f0; }
+.sidebar-footer { padding: 1rem; border-top: 1px solid var(--border); }
 
-/* --- BOTONES (ARREGLADOS) --- */
+/* --- BOTONES --- */
 .btn-primary, .btn-secondary, .btn-logout {
   display: inline-flex;
   align-items: center;
@@ -93,14 +103,14 @@ a { text-decoration: none; color: #2563eb; }
   border: 1px solid transparent;
 }
 
-.btn-primary { background: #2563eb; color: white; border-color: #2563eb; }
-.btn-primary:hover { background: #1d4ed8; color: white; }
+.btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+.btn-primary:hover { background: var(--primary-hover); color: white; }
 
-.btn-secondary { background: white; color: #374151; border-color: #d1d5db; }
-.btn-secondary:hover { background: #f9fafb; }
+.btn-secondary { background: white; color: #4A5568; border-color: #CBD5E1; }
+.btn-secondary:hover { background: #F8FAFC; }
 
-.btn-logout { background: #fee2e2; color: #991b1b; width: 100%; border: none; }
-.btn-logout:hover { background: #fecaca; }
+.btn-logout { background: #FEE2E2; color: #991B1B; width: 100%; border: none; }
+.btn-logout:hover { background: #FECACA; }
 
 /* Botones de acción (Aprobar/Rechazar en tablas) */
 .btn-accion {
@@ -111,104 +121,129 @@ a { text-decoration: none; color: #2563eb; }
   border: 1px solid transparent;
   cursor: pointer;
 }
-.btn-aprobar { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
-.btn-aprobar:hover { background: #bbf7d0; }
-.btn-rechazar { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
-.btn-rechazar:hover { background: #fecaca; }
-.btn-revisar { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; }
+.btn-aprobar { background: #D1FAE5; color: #065F46; border-color: #A7F3D0; }
+.btn-aprobar:hover { background: #A7F3D0; }
+.btn-rechazar { background: #FEE2E2; color: #991B1B; border-color: #FECACA; }
+.btn-rechazar:hover { background: #FECACA; }
+.btn-revisar { background: #E0F2FE; color: #0369A1; border-color: #BAE6FD; }
 
-/* --- FORMULARIOS (ARREGLADOS) --- */
+/* --- FORMULARIOS --- */
 .form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.2rem; }
 .form-group label { font-size: 0.85rem; font-weight: 600; color: #374151; }
 .form-group input, .form-group select, .form-group textarea {
   width: 100%;
   padding: 0.7rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid #CBD5E1;
   border-radius: 6px;
   font-size: 0.95rem;
   background: white;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
-.form-group input:focus, .form-group textarea:focus {
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(58, 95, 70, 0.15);
 }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
 /* --- TARJETAS --- */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1.2rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
   margin-top: 1rem;
 }
 .card {
-  background: white;
+  background-color: #FDFBF7; /* Color CREMA */
   padding: 1.5rem;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-  transition: all 0.2s;
-  display: block;
-  color: inherit;
+  border-radius: 10px;
+  border: 1px solid #D1D5DB;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer; /* Cursor de manito para indicar que se puede hacer clic */
 }
-.card:hover { border-color: #cbd5e1; transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-.card h3 { font-size: 1.05rem; color: #1e3a8a; margin-bottom: 0.4rem; }
-.card p { font-size: 0.85rem; color: #64748b; line-height: 1.4; }
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+  border-color: var(--primary);
+}
+.card h3 {
+  font-size: 1.15rem;
+  color: var(--primary-hover);
+  margin-bottom: 0.5rem;
+}
+.card p {
+  font-size: 0.9rem;
+  color: #4B5563;
+  line-height: 1.5;
+  flex: 1; /* Empuja el pie de la tarjeta hacia abajo */
+}
+.card-footer {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #E5E7EB;
+  font-size: 0.8rem;
+  color: #6B7280;
+  display: flex;
+  justify-content: space-between;
+}
 
 /* --- HEADERS DE PÁGINA --- */
-.panel-header { margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid #e5e7eb; }
-.panel-header h1 { font-size: 1.5rem; color: #1e3a8a; font-weight: 700; }
-.panel-subtitle { font-size: 0.95rem; color: #64748b; margin-top: 0.25rem; }
+.panel-header { margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+.panel-header h1 { font-size: 1.5rem; color: var(--primary); font-weight: 700; }
+.panel-subtitle { font-size: 0.95rem; color: var(--text-muted); margin-top: 0.25rem; }
 
 /* --- TABLAS --- */
-.tabla-container { background: white; border-radius: 8px; border: 1px solid #e5e7eb; overflow-x: auto; margin-top: 1rem; }
+.tabla-container { background: white; border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; margin-top: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
 .tabla { width: 100%; border-collapse: collapse; }
-.tabla th { background: #f9fafb; padding: 0.8rem 1rem; text-align: left; font-size: 0.8rem; font-weight: 600; color: #475569; border-bottom: 1px solid #e5e7eb; text-transform: uppercase; }
-.tabla td { padding: 0.8rem 1rem; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+.tabla th { background: #F9FAFB; padding: 0.8rem 1rem; text-align: left; font-size: 0.8rem; font-weight: 600; color: #475569; border-bottom: 1px solid var(--border); text-transform: uppercase; }
+.tabla td { padding: 0.8rem 1rem; border-bottom: 1px solid #F1F5F9; font-size: 0.9rem; }
 .tabla tr:last-child td { border-bottom: none; }
 
 /* --- MODALES --- */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
 .modal-content { background: white; padding: 2rem; border-radius: 12px; width: 100%; max-width: 550px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); position: relative; }
-.modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b; }
-.modal-acciones { display: flex; gap: 1rem; margin-top: 2rem; border-top: 1px solid #e5e7eb; padding-top: 1.5rem; }
-.btn-cerrar-modal { background: #f1f5f9; color: #475569; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; cursor: pointer; }
+.modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
+.modal-acciones { display: flex; gap: 1rem; margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.5rem; }
+.btn-cerrar-modal { background: #F1F5F9; color: #475569; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; cursor: pointer; }
 
-/* --- FIX DEL CERTIFICADO (Datos separados) --- */
-.certificado-card { background: white; padding: 2rem; border-radius: 10px; border: 1px solid #e5e7eb; max-width: 600px; margin-top: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-.certificado-card h2 { font-size: 1.2rem; color: #1e3a8a; margin-bottom: 1.5rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.5rem; }
+/* --- FIX DEL CERTIFICADO --- */
+.certificado-card { background: white; padding: 2rem; border-radius: 10px; border: 1px solid var(--border); max-width: 600px; margin-top: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.certificado-card h2 { font-size: 1.2rem; color: var(--primary); margin-bottom: 1.5rem; border-bottom: 1px solid #F1F5F9; padding-bottom: 0.5rem; }
 .datos-lista { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1.5rem; }
-.dato { display: flex; justify-content: space-between; border-bottom: 1px dashed #e5e7eb; padding-bottom: 0.5rem; }
-.dato-label { color: #64748b; font-size: 0.85rem; font-weight: 500; }
-.dato-valor { font-weight: 600; color: #1f2937; font-size: 0.9rem; }
+.dato { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border); padding-bottom: 0.5rem; }
+.dato-label { color: var(--text-muted); font-size: 0.85rem; font-weight: 500; }
+.dato-valor { font-weight: 600; color: var(--text-main); font-size: 0.9rem; }
 
 /* --- ALERTAS Y BADGES --- */
 .alert { padding: 0.8rem 1rem; border-radius: 6px; font-size: 0.875rem; margin-bottom: 1rem; font-weight: 500; }
-.alert-error { background: #fee2e2; color: #991b1b; }
-.alert-success { background: #dcfce7; color: #166534; }
+.alert-error { background: #FEE2E2; color: #991B1B; }
+.alert-success { background: #D1FAE5; color: #065F46; }
 
 .badge { padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
-.badge-success { background: #dcfce7; color: #166534; }
-.badge-warning { background: #fef3c7; color: #92400e; }
-.badge-danger { background: #fee2e2; color: #991b1b; }
-.badge-info { background: #e0f2fe; color: #0369a1; }
+.badge-success { background: #D1FAE5; color: #065F46; }
+.badge-warning { background: #FEF3C7; color: #92400E; }
+.badge-danger { background: #FEE2E2; color: #991B1B; }
+.badge-info { background: #E0F2FE; color: #0369A1; }
 
 /* Filtros tipo píldora */
+/* --- FILTROS TIPO PÍLDORA (CON ESPACIADO) --- */
 .filtros {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem; /* Más espacio entre botones */
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .btn-filtro {
-  padding: 0.4rem 1rem;
-  border: 1px solid #e2e8f0;
-  background: white;
-  border-radius: 9999px; /* Forma de píldora */
-  color: #64748b;
+  padding: 0.5rem 1.2rem;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  border-radius: 9999px;
+  color: #2E7D32;
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
@@ -216,233 +251,98 @@ a { text-decoration: none; color: #2563eb; }
 }
 
 .btn-filtro:hover {
-  background: #f1f5f9;
-  color: #1e293b;
+  background: #E8F5E9;
 }
 
 .btn-filtro.active {
-  background: #1e3a8a;
+  background: var(--primary);
   color: white;
-  border-color: #1e3a8a;
+  border-color: var(--primary);
 }
 
 /* =========================================
    ARREGLO ESPECÍFICO PARA LOGIN Y REGISTRO
    ========================================= */
-
-/* Fondo de pantalla completa para login/registro */
-.auth-wrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: #f1f5f9; /* Fondo gris azulado muy limpio */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  z-index: 9999; /* Se pone por encima de todo */
-}
-
-/* La tarjeta blanca central */
-.auth-card {
-  background: white;
-  width: 100%;
-  max-width: 420px; /* Tamaño ideal para login */
-  padding: 3rem 2.5rem;
-  border-radius: 12px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  border: 1px solid #e2e8f0;
-}
-
-/* Variante ancha para el registro */
-.auth-card.wide {
-  max-width: 650px; 
-}
-
-.auth-card h1 {
-  font-size: 1.8rem;
-  color: #1e3a8a;
-  text-align: center;
-  margin-bottom: 0.5rem;
-  font-weight: 700;
-}
-
-.auth-subtitle {
-  text-align: center;
-  color: #64748b;
-  font-size: 0.95rem;
-  margin-bottom: 2rem;
-}
-
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-}
-
-/* Quitamos el margen extra que tenían los form-group aquí */
-.auth-form .form-group {
-  margin-bottom: 0;
-}
-
-.auth-form .btn-primary {
-  margin-top: 0.5rem;
-  padding: 0.8rem;
-  font-size: 1rem;
-}
-
-.auth-footer {
-  text-align: center;
-  margin-top: 2rem;
-  font-size: 0.9rem;
-  color: #64748b;
-}
-
-.auth-footer a {
-  color: #2563eb;
-  font-weight: 600;
-}
-
-.auth-footer a:hover {
-  text-decoration: underline;
-}
+.auth-wrapper { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: var(--bg-body); display: flex; align-items: center; justify-content: center; padding: 1rem; z-index: 9999; }
+.auth-card { background: white; width: 100%; max-width: 420px; padding: 3rem 2.5rem; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid var(--border); }
+.auth-card.wide { max-width: 650px; }
+.auth-card h1 { font-size: 1.8rem; color: var(--primary); text-align: center; margin-bottom: 0.5rem; font-weight: 700; }
+.auth-subtitle { text-align: center; color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem; }
+.auth-form { display: flex; flex-direction: column; gap: 1.2rem; }
+.auth-form .form-group { margin-bottom: 0; }
+.auth-form .btn-primary { margin-top: 0.5rem; padding: 0.8rem; font-size: 1rem; }
+.auth-footer { text-align: center; margin-top: 2rem; font-size: 0.9rem; color: var(--text-muted); }
+.auth-footer a { color: var(--primary); font-weight: 600; }
+.auth-footer a:hover { text-decoration: underline; }
 
 /* ==========================================
-   ARREGLO DEL CALENDARIO (Faltaba este bloque)
+   ARREGLO DEL CALENDARIO
    ========================================== */
-.calendario-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 2rem 0 1rem 0;
-  gap: 1rem;
-}
+.calendario-header { display: flex; justify-content: space-between; align-items: center; margin: 2rem 0 1rem 0; gap: 1rem; }
+.calendario-header h3 { margin: 0; font-size: 1.1rem; text-align: center; flex: 1; color: var(--primary); }
+.calendario-grid { display: flex; background: white; border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; width: 100%; }
+.calendario-col-horas { min-width: 70px; border-right: 1px solid var(--border); background: #F9FAFB; }
+.calendario-col-dia { flex: 1; min-width: 100px; border-right: 1px solid var(--border); }
+.calendario-col-dia:last-child { border-right: none; }
+.calendario-celda-header { height: 40px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid var(--border); background: #F3F4F6; color: #4B5563; }
+.calendario-celda-hora { height: 40px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #6B7280; border-bottom: 1px solid #F3F4F6; }
+.calendario-celda-bloque { height: 40px; border-bottom: 1px solid #F3F4F6; cursor: pointer; transition: background 0.2s; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; color: #991B1B; }
+.calendario-celda-bloque.disponible:hover { background: #E0E7FF; }
+.calendario-celda-bloque.ocupado { background: #FEE2E2; cursor: not-allowed; }
+.calendario-celda-bloque.seleccionado { background: var(--primary); color: white; border: 2px solid var(--primary-hover); }
 
-.calendario-header h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  text-align: center;
-  flex: 1;
-  color: #1e3a8a;
-}
+/* Calendario: Mi Reserva (verde) */
+.calendario-celda-bloque.mi-reserva { background: #D1FAE5; color: #065F46; cursor: pointer; font-weight: bold; font-size: 0.7rem; }
 
-.calendario-grid {
-  display: flex; /* Esto hace que los días se pongan uno al lado del otro */
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  overflow-x: auto;
-  width: 100%;
-}
+.auth-container { display: flex; justify-content: center; align-items: flex-start; height: 100vh; width: 100vw; padding: 3rem 1rem; background-color: var(--bg-body); overflow-y: auto; }
+.auth-card { background: white; padding: 2.5rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); width: 100%; max-width: 420px; }
+.auth-card-wide { max-width: 750px; }
 
-.calendario-col-horas {
-  min-width: 70px;
-  border-right: 1px solid #e5e7eb;
-  background: #f9fafb;
-}
-
-.calendario-col-dia {
-  flex: 1; /* Hace que todos los días midan lo mismo */
-  min-width: 100px;
-  border-right: 1px solid #e5e7eb;
-}
-
-.calendario-col-dia:last-child {
-  border-right: none;
-}
-
-.calendario-celda-header {
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 0.85rem;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f3f4f6;
-  color: #4b5563;
-}
-
-.calendario-celda-hora {
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  color: #6b7280;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-.calendario-celda-bloque {
-  height: 40px;
-  border-bottom: 1px solid #f3f4f6;
+/* ==========================================
+   DISEÑO RESPONSIVE (CELULARES Y TABLETS)
+   ========================================== */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--primary);
   cursor: pointer;
-  transition: background 0.2s;
-  font-size: 0.75rem;
-  display: flex;
+  padding: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .app-layout { grid-template-columns: 1fr; }
+  .sidebar { position: fixed; top: 0; left: -100%; width: 260px; height: 100vh; z-index: 2000; transition: left 0.3s ease; box-shadow: 2px 0 10px rgba(0,0,0,0.1); }
+  .sidebar.open { left: 0; }
+  .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.5); z-index: 1999; display: none; }
+  .sidebar-overlay.show { display: block; }
+  .main-content { padding: 1rem; }
+  .menu-toggle { display: block; position: fixed; top: 1rem; left: 1rem; z-index: 1500; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .panel-header { margin-top: 3rem; }
+} 
+/* --- BOTÓN DE TEXTO PARA TABLAS --- */
+.link-btn {
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  color: var(--primary) !important; /* Azul/Verde para que parezca enlace */
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  color: #991b1b;
+  gap: 0.3rem;
 }
 
-.calendario-celda-bloque.disponible:hover {
-  background: #e0e7ff;
+.link-btn:hover {
+  text-decoration: underline;
 }
-
-.calendario-celda-bloque.ocupado {
-  background: #fee2e2;
-  cursor: not-allowed;
-}
-
-.calendario-celda-bloque.seleccionado {
-  background: #2563eb;
-  color: white;
-  border: 2px solid #1e3a8a;
-}
-
-.form-group input, 
-.form-group select, 
-.form-group textarea {
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 1rem;
-  background-color: white;
-  transition: border-color 0.2s;
-  width: 100%;
-}
-
-.form-group input:focus, 
-.form-group select:focus, 
-.form-group textarea:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.auth-container {
+/* Botones de acción (Aprobar/Rechazar en tablas) */
+.acciones {
   display: flex;
-  justify-content: center;
-  align-items: flex-start; /* Empieza desde arriba */
-  height: 100vh; /* Ocupa todo el alto de la pantalla */
-  width: 100vw;
-  padding: 3rem 1rem;
-  background-color: #f8fafc;
-  overflow-y: auto; /* <--- ESTO ES LA CLAVE: permite hacer scroll aquí adentro */
-}
-
-.auth-card {
-  background: white;
-  padding: 2.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  width: 100%;
-  max-width: 420px;
-}
-
-/* Para el formulario de registro que es más ancho */
-.auth-card-wide {
-  max-width: 750px; 
+  gap: 0.75rem; /* <--- ESTO SEPARA LOS BOTONES */
+  flex-wrap: wrap;
+  align-items: center;
 }
